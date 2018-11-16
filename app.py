@@ -27,7 +27,6 @@ def loginUser():
     session['user'] = email
     return redirect(url_for('index'))
 
-
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
@@ -37,6 +36,10 @@ def signUpUser():
     email = request.form.get("email")
     pwd = request.form.get("password")
     return email
+
+@app.route("/post",methods=['GET','POST'])
+def post():
+    pass
 
 
 if __name__ == "__main__":
