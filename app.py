@@ -11,21 +11,33 @@ def connectDB():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if 'user' in session:
+        return render_template("index.html",email=session['user'])
+    else:
+        return render_template("index.html",email="No one sign in yet")
 
-@app.route("/login",methods=['GET','POST'])
+@app.route("/login")
 def login():
-    if request.method == 'POST':
-        pass
-    else:
-        return render_template("login.html")
+    return render_template("login.html")
 
-@app.route("/signup",methods=['GET','POST'])
+@app.route("/login/user",methods=['POST'])
+def loginUser():
+    email = request.form.get("email")
+    pwd = request.form.get("password")
+    session['user'] = email
+    return redirect(url_for('index'))
+
+
+@app.route("/signup")
 def signup():
-    if request.method == 'POST':
-        pass
-    else:
-        return render_template("signup.html")
+    return render_template("signup.html")
+
+@app.route("/signup/user",methods=['POST'])
+def signUpUser():
+    email = request.form.get("email")
+    pwd = request.form.get("password")
+    return email
+
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0',debug=True)
