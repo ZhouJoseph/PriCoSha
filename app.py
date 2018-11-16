@@ -39,7 +39,10 @@ def signUpUser():
 
 @app.route("/post",methods=['GET','POST'])
 def post():
-    pass
+    if request.method == 'GET':
+        return render_template('post.html')
+    else:
+        pass
 
 
 if __name__ == "__main__":
