@@ -11,10 +11,7 @@ def connectDB():
 
 @app.route("/")
 def index():
-    if 'user' in session:
-        return render_template("index.html",email=session['user'])
-    else:
-        return render_template("index.html",email="No one sign in yet")
+    return render_template("index.html")
 
 @app.route("/login")
 def login():
@@ -25,7 +22,7 @@ def loginUser():
     email = request.form.get("email")
     pwd = request.form.get("password")
     session['user'] = email
-    return redirect(url_for('index'))
+    return redirect(url_for('post'))
 
 @app.route("/signup")
 def signup():
@@ -40,7 +37,10 @@ def signUpUser():
 @app.route("/post",methods=['GET','POST'])
 def post():
     if request.method == 'GET':
-        return render_template('post.html')
+        if 'user' in session:
+            return render_template('post.html',email=session['user'])
+        else:
+            return redirect(url_for('login'))
     else:
         pass
 
