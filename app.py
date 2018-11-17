@@ -4,10 +4,6 @@ import pymysql.cursors
 app = Flask(__name__)
 app.secret_key = 'this_is_supposed_to_be_secret'
 
-def connectDB():
-    conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
-    return conn
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -34,8 +30,7 @@ def signUpUser():
     lname = request.form["lname"]
     email = request.form["email"]
     pwd = request.form["pwd"]
-    conn = connectDB()
-    result = []
+    conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
     try:
         with conn.cursor() as cursor:
             sql = "SELECT * FROM person WHERE email=(%s)"
@@ -52,7 +47,6 @@ def signUpUser():
             return redirect(url_for('post'))
         else:
             return 505
-
 
     session['user'] = email
     return redirect(url_for('post'))

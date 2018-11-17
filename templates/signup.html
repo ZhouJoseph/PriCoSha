@@ -31,7 +31,7 @@
                         <a class="nav-link" href="{{url_for('login')}}">log in</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">sign up
+                        <a class="nav-link" href="{{url_for('signup')}}">sign up
                         </a>
                     </li>
                 </ul>
@@ -53,6 +53,14 @@
         Email already in use, please check it carefully!
         </center>
         <button type="button" class="close" aria-label="Close" onclick="hideEmailAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailLength">
+        <center>
+        Sorry, but Email length cannot exceed 20!
+        </center>
+        <button type="button" class="close" aria-label="Close" onclick="hideEmailLengthAlert()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -92,6 +100,9 @@
         function hideEmailAlert(){
             $("#emailAlert").hide();
         }
+        function hideEmailLengthAlert(){
+            $("#emailLength").hide();
+        }
         function submitSignUpForm(){
             var fname = $("input[type=text][name=fname]" ).val();
             var lname = $("input[type=text][name=lname]" ).val();
@@ -100,7 +111,10 @@
             var secPwd = $("input[type=password][id=2pwd]" ).val();
             if (pwd !== secPwd){
                 $("#pwdAlert").show();
-            } else{
+            } else if(email.length>20){
+                $("#emailLength").show();
+            }
+            else{
                 $.ajax({
                     type: "POST",
                     data: {
