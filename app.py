@@ -30,7 +30,7 @@ def signUpUser():
     lname = request.form["lname"]
     email = request.form["email"]
     pwd = request.form["pwd"]
-    conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
+    conn = pymysql.connect(host='127.0.0.1', user='root', database='pricosha')
     try:
         with conn.cursor() as cursor:
             sql = "SELECT * FROM person WHERE email=(%s)"
