@@ -4,7 +4,6 @@ import pymysql.cursors
 app = Flask(__name__)
 app.secret_key = 'this_is_supposed_to_be_secret'
 
-
 def connectDB():
     conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
     return conn
@@ -19,8 +18,8 @@ def login():
 
 @app.route("/login/user",methods=['POST'])
 def loginUser():
-    email = request.form.get("email")
-    pwd = request.form.get("password")
+    email = request.form["email"]
+    pwd = request.form["pwd"]
     session['user'] = email
     return redirect(url_for('post'))
 
@@ -28,11 +27,35 @@ def loginUser():
 def signup():
     return render_template("signup.html")
 
+
 @app.route("/signup/user",methods=['POST'])
 def signUpUser():
-    email = request.form.get("email")
-    pwd = request.form.get("password")
-    return email
+    fname = request.form["fname"]
+    lname = request.form["lname"]
+    email = request.form["email"]
+    pwd = request.form["pwd"]
+    conn = connectDB()
+    result = []
+    try:
+        with conn.cursor() as cursor:
+            sql = "SELECT * FROM person WHERE email=(%s)"
+            cursor.execute(sql,(email))
+            result = cursor.fetchone()
+            if not result:
+                sql = "INSERT INTO `person` (`email`,`password`,`fname`,`lname`) VALUES (%s,%s,%s,%s)"
+                cursor.execute(sql,(email,pwd,fname,lname))
+    finally:
+        conn.commit()
+        conn.close()
+        if result is None:
+            session['user'] = email
+            return redirect(url_for('post'))
+        else:
+            return 505
+
+
+    session['user'] = email
+    return redirect(url_for('post'))
 
 @app.route("/post",methods=['GET','POST'])
 def post():

@@ -39,11 +39,34 @@
         </div>
     </nav>
 
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="pwdAlert">
+        <center>
+        Two of your passwords don't match each other
+        </center>
+        <button type="button" class="close" aria-label="Close" onclick="hidePWDAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailAlert">
+        <center>
+        Email already in use, please check it carefully!
+        </center>
+        <button type="button" class="close" aria-label="Close" onclick="hideEmailAlert()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     <div id="form-div">
-        <form action="/signup" method="POST"></form>
+        <form>
             <center>
             <h6>Sign Up Here</h6>
-            
+            <div class="input-group form-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="">Name</span>
+                </div>
+                <input type="text" class="form-control" name="fname" placeholder="fname">
+                <input type="text" class="form-control" name="lname" placeholder="lname">
+            </div>
             <div class="form-group">
                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                 
@@ -54,9 +77,50 @@
             <div class="form-group">
                 <input type="password" class="form-control" id="2pwd" placeholder="Enter Your Password Again">
             </div>
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-            </center>
         </form>
+        </center>
+        <button onclick="submitSignUpForm()" class="btn btn-primary" id="signUpBtn">Sign Up</button>
     </div>
+
+    <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script>
+        $(".alert").hide();
+        function hidePWDAlert(){
+            $("#pwdAlert").hide();
+        }
+        function hideEmailAlert(){
+            $("#emailAlert").hide();
+        }
+        function submitSignUpForm(){
+            var fname = $("input[type=text][name=fname]" ).val();
+            var lname = $("input[type=text][name=lname]" ).val();
+            var email = $("input[type=email][name=email]" ).val();
+            var pwd = $("input[type=password][id=pwd]" ).val();
+            var secPwd = $("input[type=password][id=2pwd]" ).val();
+            if (pwd !== secPwd){
+                $("#pwdAlert").show();
+            } else{
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        'fname': fname,
+                        'lname': lname,
+                        'email': email,
+                        'pwd' : pwd,
+                    },
+                    url: "/signup/user",
+                    success: function(e){
+                        var oldURL = window.location.href;
+                        window.location=oldURL.slice(0,-6)+"post";
+                    },
+                    error: function(e){
+                        $("#emailAlert").show();
+                    }
+                })
+            }
+        }
+    </script>
 </body>
+
 </html>

@@ -3,6 +3,6 @@
     margin: 0 auto;
     margin-top: 5%;
 }
-button{
+#signUpBtn, #logInBtn{
     width: 100%;
 }
