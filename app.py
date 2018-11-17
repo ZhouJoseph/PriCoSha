@@ -31,14 +31,25 @@ def index():
 
 @app.route("/login")
 def login():
-    return render_template("login.html",errors = session['err'])
+    error = request.args.get('error')
+    return render_template("login.html",errors = error )
 
 @app.route("/login/user",methods=['GET','POST'])
 def loginUser():
     email = request.form["email"]
     pwd = request.form["pwd"]
-    session['user'] = email
-    return redirect(url_for('post'))
+    cursor = conn.cursor()
+    sql = "SELECT * FROM person WHERE email=(%s) AND password=(%s)"
+    cursor.execute(sql,(email,pwd))
+    data = cursor.fetchone()
+    cursor.close()
+    error = None
+    if(data):
+        session['user'] = email
+        return redirect(url_for('post'))
+    else:
+        msg = 'Invalid login or username'
+        return redirect(url_for('login', error=msg))
 
 @app.route("/signup")
 def signup():
@@ -83,6 +94,11 @@ def post():
             return redirect(url_for('login'))
     else:
         pass
+
+@app.route("/groups",methods=['GET','POST'])
+def GroupManagement():
+    return render_template('GroupManagement.html')
+
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0',debug=True)

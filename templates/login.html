@@ -41,22 +41,12 @@
         </div>
     </nav>
 
-    {% if errors=='UserNotFound' %}
+    {% if errors %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="userAlert">
         <center>
-        Email not found!
+        {{ errors }}
         </center>
         <button type="button" class="close" onclick="hideUserAlert()" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
-    {% if errors=='PwdNotMatch' %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="pwdAlert">
-        <center>
-        Password/email pair not match!
-        </center>
-        <button type="button" class="close" aria-label="Close" onclick="hidePWDAlert()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -84,9 +74,7 @@
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <script>
-        function hidePWDAlert(){
-            $("#pwdAlert").hide();
-        }
+        
         function hideUserAlert(){
             $("#userAlert").hide();
         }

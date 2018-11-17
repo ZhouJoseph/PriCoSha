@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PriCoSha | Group Management</title>
     <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/main.css">
@@ -23,7 +22,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('index')}}">Home</a>
                     </li>
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{{url_for('post')}}">Post</a>
                     </li>
                     <li class="nav-item">
@@ -32,8 +31,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
                     </li>
-		    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('GroupManagement')}}">group management</a>
+		            <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('GroupManagement')}}">group management</a>
                     </li>
                 </ul>
             </div>
@@ -43,10 +42,11 @@
     <p>
         Hi, {{email}}
     </p>
-    </center>
+    </center>
 
-<!–– Create FG, Give it a Unique name, Might add description––>
-<!–– Might add User to FG, no duplication though,  ––>
+
+<!ï¿½ï¿½ Create FG, Give it a Unique name, Might add descriptionï¿½ï¿½>
+<!ï¿½ï¿½ Might add User to FG, no duplication though,  ï¿½ï¿½>
 </body>
 
 </html>
