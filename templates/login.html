@@ -38,7 +38,7 @@
         </div>
     </nav>
 
-    {% if errors.UserNotFound %}
+    {% if errors=='UserNotFound' %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="userAlert">
         <center>
         Email not found!
@@ -48,7 +48,7 @@
         </button>
     </div>
     {% endif %}
-    {% if errors.PwdNotMatch %}
+    {% if errors=='PwdNotMatch' %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="pwdAlert">
         <center>
         Password/email pair not match!

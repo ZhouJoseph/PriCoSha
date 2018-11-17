@@ -25,15 +25,13 @@ class error:
         elif err == "2PwdMatch":
             self.SecPwdMatch = True
 
-err = error()
-
 @app.route("/")
 def index():
     return render_template("index.html")
 
 @app.route("/login")
 def login():
-    return render_template("login.html",errors = err)
+    return render_template("login.html",errors = session['err'])
 
 @app.route("/login/user",methods=['GET','POST'])
 def loginUser():
@@ -44,7 +42,8 @@ def loginUser():
 
 @app.route("/signup")
 def signup():
-    return render_template("signup.html",errors = err)
+    error = request.args.get('error')
+    return render_template("signup.html",errors = error)
 
 @app.route("/signup/user",methods=['GET','POST'])
 def signUpUser():
@@ -52,35 +51,28 @@ def signUpUser():
     lname = request.form["lname"]
     email = request.form["email"]
     pwd = request.form["pwd"]
+    secPwd = request.form["2pwd"]
 
+    if pwd != secPwd:
+        msg = "Your Passwords should match each other"
+        return redirect(url_for('signup',error=msg))
+    if len(email) > 20:
+        msg = "Sorry, but email length cannot exceed 20"
+        return redirect(url_for('signup',error=msg))
     cursor = conn.cursor()
     try:
         sql = "SELECT * FROM person WHERE email=(%s)"
         cursor.execute(sql,(email))
         result = cursor.fetchone()
     finally:
-
-        
-
-    # try:
-    #     with conn.cursor() as cursor:
-    #         sql = "SELECT * FROM person WHERE email=(%s)"
-    #         cursor.execute(sql,(email))
-    #         result = cursor.fetchone()
-    #         if not result:
-    #             sql = "INSERT INTO `person` (`email`,`password`,`fname`,`lname`) VALUES (%s,%s,%s,%s)"
-    #             cursor.execute(sql,(email,pwd,fname,lname))
-    # finally:
-    #     conn.commit()
-    #     conn.close()
-    #     if result is None:
-    #         session['user'] = email
-    #         return redirect(url_for('post'))
-    #     else:
-    #         return redirect(url_for('signup'))
-
-        session['user'] = email
-        return redirect(url_for('post'))
+        if not result:
+            sql = "INSERT INTO `person` (`email`,`password`,`fname`,`lname`) VALUES (%s,%s,%s,%s)"
+            cursor.execute(sql,(email,pwd,fname,lname))
+            session['user'] = email
+            return redirect(url_for('post'))
+        else:
+            msg = "User Already Exist"
+            return redirect(url_for('signup',error=msg))
 
 @app.route("/post",methods=['GET','POST'])
 def post():

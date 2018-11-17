@@ -39,37 +39,17 @@
         </div>
     </nav>
 
-    {% if errors.SecPwdMatch %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="pwdAlert">
+    {% if errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <center>
-        Two of your passwords don't match each other
+        {{ errors }}
         </center>
-        <button type="button" class="close" aria-label="Close" onclick="hidePWDAlert()">
+        <button type="button" class="close" aria-label="Close" onclick="hideAlert()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
     {% endif %}
 
-    {% if errors.UserAlreadyExist %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailAlert">
-        <center>
-        Email already in use, please check it carefully!
-        </center>
-        <button type="button" class="close" aria-label="Close" onclick="hideEmailAlert()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
-    {% if errors.EmailLength %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailLength">
-        <center>
-        Sorry, but Email length cannot exceed 20!
-        </center>
-        <button type="button" class="close" aria-label="Close" onclick="hideEmailLengthAlert()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
     <div id="form-div">
         <form action="/signup/user" method="POST">
             <center>
@@ -89,7 +69,7 @@
                 <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" id="2pwd" placeholder="Enter Your Password Again">
+                <input type="password" class="form-control" id="2pwd" name="2pwd" placeholder="Enter Your Password Again">
             </div>
         <button type="submit" class="btn btn-primary" id="signUpBtn">Sign Up</button>
         </form>
@@ -99,14 +79,8 @@
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script>
-        function hidePWDAlert(){
-            $("#pwdAlert").hide();
-        }
-        function hideEmailAlert(){
-            $("#emailAlert").hide();
-        }
-        function hideEmailLengthAlert(){
-            $("#emailLength").hide();
+        function hideAlert(){
+            $(".alert").hide();
         }
     </script>
 </body>
