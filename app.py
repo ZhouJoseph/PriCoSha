@@ -12,14 +12,20 @@ class error:
         self.UserAlreadyExist = False
         self.UserNotFound = False
         self.PwdNotMatch = False
+        self.EmailLength = False
+        self.SecPwdMatch = False
         if err == "UserAlreadyExist":
             self.UserAlreadyExist = True
         elif err == "UserNotFound":
             self.UserNotFound = True
         elif err == "PwdNotMatch":
             self.PwdNotMatch = True
+        elif err == "EmailLength":
+            self.EmailLength = True
+        elif err == "2PwdMatch":
+            self.SecPwdMatch = True
 
-errors = error()
+err = error()
 
 @app.route("/")
 def index():
@@ -27,7 +33,7 @@ def index():
 
 @app.route("/login")
 def login():
-    return render_template("login.html",errors = errors)
+    return render_template("login.html",errors = err)
 
 @app.route("/login/user",methods=['GET','POST'])
 def loginUser():
@@ -38,7 +44,7 @@ def loginUser():
 
 @app.route("/signup")
 def signup():
-    return render_template("signup.html",errors = errors)
+    return render_template("signup.html",errors = err)
 
 @app.route("/signup/user",methods=['GET','POST'])
 def signUpUser():
