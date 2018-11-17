@@ -91,7 +91,7 @@ def post():
         if 'user' in session:
             return render_template('post.html',email=session['user'])
         else:
-            return redirect(url_for('login'))
+            return render_template('post.html',email="Visitor")
     else:
         pass
 
@@ -99,6 +99,10 @@ def post():
 def GroupManagement():
     return render_template('GroupManagement.html')
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0',debug=True)

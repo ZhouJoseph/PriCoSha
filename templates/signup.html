@@ -21,11 +21,11 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('index')}}">Home
+                        <a class="nav-link" href="{{url_for('index')}}">home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('post')}}">Post</a>
+                        <a class="nav-link" href="{{url_for('post')}}">post</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('login')}}">log in</a>
@@ -33,9 +33,6 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="{{url_for('signup')}}">sign up
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('GroupManagement')}}">group management</a>
                     </li>
                 </ul>
             </div>
@@ -56,23 +53,22 @@
     <div id="form-div">
         <form action="/signup/user" method="POST">
             <center>
-            <h6>Sign Up Here</h6>
+            <h6>Sign Up here</h6>
             <div class="input-group form-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="">Name</span>
                 </div>
-                <input type="text" class="form-control" name="fname" placeholder="fname">
-                <input type="text" class="form-control" name="lname" placeholder="lname">
+                <input type="text" class="form-control" name="fname" placeholder="fname" required>
+                <input type="text" class="form-control" name="lname" placeholder="lname" required>
             </div>
             <div class="form-group">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
-                
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">
+                <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password" required>
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" id="2pwd" name="2pwd" placeholder="Enter Your Password Again">
+                <input type="password" class="form-control" id="2pwd" name="2pwd" placeholder="Enter Your Password Again" required>
             </div>
         <button type="submit" class="btn btn-primary" id="signUpBtn">Sign Up</button>
         </form>

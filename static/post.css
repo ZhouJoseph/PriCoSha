@@ -1,0 +1,15 @@
+#form-group{
+
+    position: fixed;
+}
+
+#blog {
+    display: inline-block;
+    width: 600px;
+}
+
+button{
+    width:100px;
+    height: 100px;
+
+}
