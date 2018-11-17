@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PriCoSha | Group Management</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">PriCoSha</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{url_for('post')}}">Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('login')}}">log in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
+                    </li>
+		    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('GroupManagement')}}">group management</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <center>
+    <p>
+        Hi, {{email}}
+    </p>
+    </center>
+
+<!–– Create FG, Give it a Unique name, Might add description––>
+<!–– Might add User to FG, no duplication though,  ––>
+</body>
+
+</html>
