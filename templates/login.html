@@ -38,22 +38,27 @@
         </div>
     </nav>
 
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="emailAlert">
+    {% if errors.UserNotFound %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="userAlert">
         <center>
         Email not found!
         </center>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="close" onclick="hideUserAlert()" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="emailAlert">
+    {% endif %}
+    {% if errors.PwdNotMatch %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="pwdAlert">
         <center>
         Password/email pair not match!
         </center>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="close" aria-label="Close" onclick="hidePWDAlert()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
+    {% endif %}
+
 
     <div id="form-div">
         <form action="/login/user" method="POST">
@@ -64,38 +69,25 @@
             <input type="email" class="form-control" name="email" id="email" placeholder="Enter email">
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" name="password" id="pwd" placeholder="Password">
+            <input type="password" class="form-control" name="pwd" id="pwd" placeholder="Password">
         </div>
         </center>
+        <button class="btn btn-primary" id="logInBtn" type="submit">Log in</button>
+        <!-- <button class="btn btn-primary" id="logInBtn" onclick="submitLoginForm()">Log in</button> -->
         </form>
-        <button class="btn btn-primary" id="logInBtn" onclick="submitLoginForm()">Log in</button>
     </div>
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <script>
-        $('.alert').hide()
-
-        function submitLoginForm(){
-            var email = $("input[type=email][name=email]" ).val();
-            var pwd = $("input[type=password][id=pwd]" ).val();
-            $.ajax({
-                type: "POST",
-                data: {
-                    'email': email,
-                    'pwd' : pwd,
-                },
-                url: "/login/user",
-                success: function(e){
-                    var oldURL = window.location.href;
-                    window.location=oldURL.slice(0,-5)+"post";
-                },
-                error: function(e){
-                    alert("error");
-                }
-            })
+        function hidePWDAlert(){
+            $("#pwdAlert").hide();
         }
+        function hideUserAlert(){
+            $("#userAlert").hide();
+        }
+
     </script>
 </body>
 

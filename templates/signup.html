@@ -48,6 +48,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
+    {% if errors.UserAlreadyExist %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailAlert">
         <center>
         Email already in use, please check it carefully!
@@ -56,6 +57,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
+    {% endif %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert" id="emailLength">
         <center>
         Sorry, but Email length cannot exceed 20!
@@ -65,7 +67,7 @@
         </button>
     </div>
     <div id="form-div">
-        <form>
+        <form action="/signup/user" method="POST">
             <center>
             <h6>Sign Up Here</h6>
             <div class="input-group form-group">
@@ -80,20 +82,20 @@
                 
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" id="pwd" name="password" placeholder="Password">
+                <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" id="2pwd" placeholder="Enter Your Password Again">
             </div>
+        <button type="submit" class="btn btn-primary" id="signUpBtn">Sign Up</button>
         </form>
         </center>
-        <button onclick="submitSignUpForm()" class="btn btn-primary" id="signUpBtn">Sign Up</button>
     </div>
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script>
-        $(".alert").hide();
+        $('.alert').hide();
         function hidePWDAlert(){
             $("#pwdAlert").hide();
         }
@@ -102,37 +104,6 @@
         }
         function hideEmailLengthAlert(){
             $("#emailLength").hide();
-        }
-        function submitSignUpForm(){
-            var fname = $("input[type=text][name=fname]" ).val();
-            var lname = $("input[type=text][name=lname]" ).val();
-            var email = $("input[type=email][name=email]" ).val();
-            var pwd = $("input[type=password][id=pwd]" ).val();
-            var secPwd = $("input[type=password][id=2pwd]" ).val();
-            if (pwd !== secPwd){
-                $("#pwdAlert").show();
-            } else if(email.length>20){
-                $("#emailLength").show();
-            }
-            else{
-                $.ajax({
-                    type: "POST",
-                    data: {
-                        'fname': fname,
-                        'lname': lname,
-                        'email': email,
-                        'pwd' : pwd,
-                    },
-                    url: "/signup/user",
-                    success: function(e){
-                        var oldURL = window.location.href;
-                        window.location=oldURL.slice(0,-6)+"post";
-                    },
-                    error: function(e){
-                        $("#emailAlert").show();
-                    }
-                })
-            }
         }
     </script>
 </body>
