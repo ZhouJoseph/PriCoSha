@@ -1,11 +1,14 @@
 from flask import Flask, request, render_template,redirect,url_for,jsonify,session
 import pymysql.cursors
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = 'this_is_supposed_to_be_secret'
 
 conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
 
+def encrypt(hash_str):
+    return hashlib.sha256(hash_str.encode()).hexdigest()
 
 class error:
     def __init__(self,err=None):
@@ -77,6 +80,7 @@ def signUpUser():
         result = cursor.fetchone()
     finally:
         if not result:
+            pwd = encrypt(pwd)
             sql = "INSERT INTO `person` (`email`,`password`,`fname`,`lname`) VALUES (%s,%s,%s,%s)"
             cursor.execute(sql,(email,pwd,fname,lname))
             session['user'] = email
