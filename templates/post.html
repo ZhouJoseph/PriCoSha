@@ -36,9 +36,13 @@
         </div>
     </nav>
     <center>
-    <p>
-        Hi, {{email}}
-    </p>
+
+    <form action="/post" method="POST">
+    	<h1>Hi {{email}}</h1>
+    	<input type="text" name = "blog" placeholder="post" required/> </br>
+    	<input type="submit" value = Post />
+    </form>
+
     </center>
 
 
