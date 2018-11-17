@@ -43,7 +43,7 @@ def loginUser():
     pwd = request.form["pwd"]
     cursor = conn.cursor()
     sql = "SELECT * FROM person WHERE email=(%s) AND password=(%s)"
-    cursor.execute(sql,(email,pwd))
+    cursor.execute(sql,(email,encrypt(pwd)))
     data = cursor.fetchone()
     cursor.close()
     error = None
