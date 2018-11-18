@@ -69,13 +69,13 @@
     <div id="table-div">
     <center>
          <table>
-	        <th>Time</th>
-	        <th>Post</th>
+	        <th>GroupName</th>
+	        <th>Owner</th>
 
-             {% for line in posts %}
+             {% for line in belong %}
 	        <tr>
-		        <td>{{line.ts}}</td>
-                <td>{{line.blog_post}}</td>
+		        <td>{{line.fg_name}}</td>
+                <td>{{line.owner}}</td>
             </tr>
         {% endfor %}
         </table>
