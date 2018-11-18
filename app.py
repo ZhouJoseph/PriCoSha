@@ -66,6 +66,7 @@ def signUpUser():
     email = request.form["email"]
     pwd = request.form["pwd"]
     secPwd = request.form["2pwd"]
+    result = None
 
     if pwd != secPwd:
         msg = "Your Passwords should match each other"
