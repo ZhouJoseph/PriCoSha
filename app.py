@@ -1,14 +1,32 @@
 from flask import Flask, request, render_template,redirect,url_for,jsonify,session
 import pymysql.cursors
 import hashlib
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = '/img'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 
 app = Flask(__name__)
 app.secret_key = 'this_is_supposed_to_be_secret'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
 
 def encrypt(hash_str):
     return hashlib.sha256(hash_str.encode()).hexdigest()
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def saveFile(file):
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return (app.config['UPLOAD_FOLDER']+filename)
+    
 
 class tuple_to_obj(tuple):
     def __init__(self, tuple):
@@ -100,18 +118,22 @@ def signUpUser():
 def post():
     if request.method == 'GET':
         if 'user' in session:
+            # fake data for groups
+            session['groups']=['first-group','second-group']
             return render_template('post.html',email=session['user'])
         else:
             return render_template('post.html',email="Visitor")
     if request.method == 'POST':
         content = request.form["content"]
-        file_path = request.form["file_path"]
+        # file = request.form["file"]
+        # file_path = saveFile(file)
+        file_path = "No File Path Chosen Yet"
         cursor = conn.cursor()
         query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`) VALUES(%s,%s,%s)'
         cursor.execute(query,(session['user'],file_path,content))
         conn.commit()
         id = cursor.lastrowid
-        query = 'SELECT email_post, post_time, item_name, file_path FROM contentitem WHERE item_id = (%s)'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
         cursor.execute(query,id)
         data = cursor.fetchone()
         cursor.close()
@@ -121,13 +143,18 @@ def post():
 def blogs():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
-        return redirect(url_for('post'))
+        cursor = conn.cursor()
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true ORDER BY post_time DESC'
+        cursor.execute(query)
+        data = cursor.fetchall()
+        cursor.close()
+        return jsonify({'data':data})
 
 
 @app.route("/groups",methods=['GET','POST'])
