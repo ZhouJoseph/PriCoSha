@@ -115,7 +115,7 @@ def post():
         cursor.execute(query,id)
         data = cursor.fetchone()
         cursor.close()
-        return jsonify(data)
+        return jsonify({'data':data})
 
 @app.route("/post/blog")
 def blogs():
@@ -125,9 +125,9 @@ def blogs():
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
-        return jsonify(data)
+        return jsonify({'data':data})
     else:
-        return render_template('post.html',email="Visitor")
+        return redirect(url_for('post'))
 
 
 @app.route("/groups",methods=['GET','POST'])
