@@ -14,7 +14,7 @@ class tuple_to_obj(tuple):
     def __init__(self, tuple):
         self.post_time = tuple[0]
         self.item_name = tuple[1]
-        
+
 class error:
     def __init__(self,err=None):
         self.UserAlreadyExist = False
@@ -101,9 +101,9 @@ def post():
         cursor = conn.cursor();
         query = 'SELECT post_time, item_name FROM contentitem WHERE email_post = %s ORDER BY post_time DESC'
         cursor.execute(query, session['user'])
-        print(session['user'])
+        #print(session['user'])
         data = cursor.fetchall()
-        print(data)
+        #print(data)
         lst = []
         for i in data:
             lst.append(tuple_to_obj(i))
@@ -124,29 +124,3 @@ def logout():
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0',debug=True)
-
-@app.route("GroupManagement", method=['POST'])
-def newgroup():
-    fg_name = request.form["groupname"]
-    description = request.form["description"]
-
-    if len(fg_name) > 20:
-        msg = "Sorry, but group name length cannot exceed 20"
-        return redirect(url_for('GroupManagement',error=msg))
-    if len(description) > 1000:
-        msg = "Sorry, but description length cannot exceed 1000"
-        return redirect(url_for('GroupManagement',error=msg))
-    cursor = conn.cursor()
-    result = None
-    try:
-        sql = "select * from friendgroup where owner_email = (%s)"
-        cursor.execute(sql, (fgname))
-        result = cursor.fetchone()
-    finally:
-        if not result:
-            sql = "insert into friendgroup(owner_email, fg_name, description) Values (%s,%s,%s)"
-            cursor.execute(sql, (email, pwd, fname, lname))
-            return redirect(url_for("GroupManagement"))
-        else:
-            msg = "Group Already Exist"
-            return redirect(url_for('GroupManagement', error=msg))
