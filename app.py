@@ -10,6 +10,11 @@ conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
 def encrypt(hash_str):
     return hashlib.sha256(hash_str.encode()).hexdigest()
 
+class tuple_to_obj(tuple):
+    def __init__(self, tuple):
+        self.post_time = tuple[0]
+        self.item_name = tuple[1]
+        
 class error:
     def __init__(self,err=None):
         self.UserAlreadyExist = False
@@ -90,15 +95,23 @@ def signUpUser():
             msg = "User Already Exist"
             return redirect(url_for('signup',error=msg))
 
-@app.route("/post",methods=['GET','POST'])
+@app.route("/post",methods=['GET', 'POST'])
 def post():
-    if request.method == 'GET':
-        if 'user' in session:
-            return render_template('post.html',email=session['user'])
-        else:
-            return render_template('post.html',email="Visitor")
+    if 'user' in session:
+        cursor = conn.cursor();
+        query = 'SELECT post_time, item_name FROM contentitem WHERE email_post = %s ORDER BY post_time DESC'
+        cursor.execute(query, session['user'])
+        print(session['user'])
+        data = cursor.fetchall()
+        print(data)
+        lst = []
+        for i in data:
+            lst.append(tuple_to_obj(i))
+        cursor.close()
+        return render_template('post.html',email=session['user'], post_content = lst)
+
     else:
-        pass
+        return render_template('post.html',email="Visitor")
 
 @app.route("/groups",methods=['GET','POST'])
 def GroupManagement():

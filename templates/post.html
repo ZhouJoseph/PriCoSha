@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PriCoSha | Posts</title>
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link rel="stylesheet" href="{{url_for('static',filename='post.css')}}" rel="stylesheet">
 
 </head>
 <body>
@@ -21,41 +20,42 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('index')}}">home</a>
+                        <a class="nav-link" href="{{url_for('index')}}">Home</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="{{url_for('post')}}">post</a>
+                        <a class="nav-link" href="{{url_for('post')}}">Post</a>
                     </li>
-                    {% if 'user' not in session %}
-                        <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{{url_for('login')}}">log in</a>
-                        </li>
-                        <li class="nav-item">
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
-                        </li>
-                    {% endif %}
-                    {% if 'user' in session %}
-                        <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('GroupManagement')}}">your groups</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('logout')}}">logout</a>
-                        </li>
-                    {% endif %}
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('GroupManagement')}}">group management</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
     <center>
-    <div id="form-div">
-        <h3>Hi {{email}}</h3>
-        <form class="form-inline" action="/post" method="POST">
-            <div class="form-group">
-                <textarea class="form-control" id="blog" type="text" name="blog" rows="5" placeholder="post" required></textarea>
-                <button type="submit" class="btn btn-primary">Post</button>
-            </div>
-        </form>
-    </div>
+      <form action="/post" method="POST">
+      	<h1>Hi {{email}}</h1>
+      	<input type="text" name = "content" placeholder="text" required/> </br>
+      	<input type="submit" value = Post />
+      </form>
+      <table style="width:100%">
+        <th>Time</th>
+        <th>Post</th>
+
+        {% for obj in post_content %}
+        <tr>
+          <td>{{obj.post_time}}</td>
+          <td>{{obj.item_name}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
     </center>
 
 
