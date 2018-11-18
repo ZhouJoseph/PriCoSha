@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PriCoSha | Posts</title>
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
 </head>
 <body>
     <!-- Navigation -->
@@ -25,41 +24,85 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="{{url_for('post')}}">Post</a>
                     </li>
+                    {% if 'user' not in session %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('login')}}">log in</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
                     </li>
+                    {% endif %}
+                    {% if 'user' in session %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('GroupManagement')}}">group management</a>
+                        <a class="nav-link" href="{{url_for('GroupManagement')}}">your groups</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('logout')}}">logout</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-    <center>
-      <form action="/post" method="POST">
-      	<h1>Hi {{email}}</h1>
-      	<input type="text" name = "content" placeholder="text" required/> </br>
-      	<input type="submit" value = Post />
-      </form>
-      <table style="width:100%">
-        <th>Time</th>
-        <th>Post</th>
-
-        {% for obj in post_content %}
-        <tr>
-          <td>{{obj.post_time}}</td>
-          <td>{{obj.item_name}}</td>
-        </tr>
-        {% endfor %}
-      </table>
-
-    </center>
+        <center>
+            <h3>Hi {{email}}</h3>
+            <div id="postForm" style="width:50%;min-width: 400px;">
+                <form autocomplete="off">
+                    <div class="input-group form-group">
+                        <input class="form-control" type="text" id="file_path" name="file_path" placeholder="File Path" />
+                        <input class="form-control" type="text" id="blog" name="content" placeholder="Plz name your post" required />
+                    </div>
+                </form>
+                <button onclick="addPost()" class="btn btn-outline-dark mb-2" style="width:100%">Post</button>
+            </div>
+            <div class="list-group" style="width:50%;min-width: 400px" id="posts"></div>
+        </center>
 
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script>
+        function generateSpan(email,time,content,path){
+            var tag = 'tag';
+            var comment = 'comment';
+            var span = '<span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted">'+comment+' '+tag+'</small></div></span>';
+            return span;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/post/blog",
+            success: function(posts){
+                for(var i = 0; i < posts.length; i++){
+                    var span = generateSpan(posts[i][0],posts[i][1],posts[i][2],posts[i][3]);
+                    $("#posts").append(span);
+                }
+            },
+            error: function(err){
+                alert("err");
+            }
+        });
+
+        function addPost(){
+            var content = $("#blog").val();
+            var file_path = $("#file_path").val();
+            $.ajax({
+                type:"POST",
+                data:{
+                    "content": content,
+                    "file_path": file_path,
+                },
+                url: "/post",
+                success: function(posts){
+                    var span = generateSpan(posts[0],posts[1],posts[2],posts[3]);
+                    $("#posts").prepend(span);
+                },
+                error: function(err){
+                    alert("umm");
+                }
+            })
+        }
+
+    </script>
+
 </body>
 </html>

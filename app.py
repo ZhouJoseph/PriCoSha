@@ -47,7 +47,7 @@ def loginUser():
     email = request.form["email"]
     pwd = request.form["pwd"]
     cursor = conn.cursor()
-    sql = "SELECT * FROM person WHERE email=(%s) AND password=(%s)"
+    sql = "SELECT * FROM Person WHERE email=(%s) AND password=(%s)"
     cursor.execute(sql,(email,encrypt(pwd)))
     data = cursor.fetchone()
     cursor.close()
@@ -72,7 +72,6 @@ def signUpUser():
     pwd = request.form["pwd"]
     secPwd = request.form["2pwd"]
     result = None
-
     if pwd != secPwd:
         msg = "Your Passwords should match each other"
         return redirect(url_for('signup',error=msg))
@@ -89,6 +88,8 @@ def signUpUser():
             pwd = encrypt(pwd)
             sql = "INSERT INTO `person` (`email`,`password`,`fname`,`lname`) VALUES (%s,%s,%s,%s)"
             cursor.execute(sql,(email,pwd,fname,lname))
+            conn.commit()
+            cursor.close()
             session['user'] = email
             return redirect(url_for('post'))
         else:
@@ -97,21 +98,37 @@ def signUpUser():
 
 @app.route("/post",methods=['GET', 'POST'])
 def post():
-    if 'user' in session:
-        cursor = conn.cursor();
-        query = 'SELECT post_time, item_name FROM contentitem WHERE email_post = %s ORDER BY post_time DESC'
-        cursor.execute(query, session['user'])
-        #print(session['user'])
-        data = cursor.fetchall()
-        #print(data)
-        lst = []
-        for i in data:
-            lst.append(tuple_to_obj(i))
+    if request.method == 'GET':
+        if 'user' in session:
+            return render_template('post.html',email=session['user'])
+        else:
+            return render_template('post.html',email="Visitor")
+    if request.method == 'POST':
+        content = request.form["content"]
+        file_path = request.form["file_path"]
+        cursor = conn.cursor()
+        query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`) VALUES(%s,%s,%s)'
+        cursor.execute(query,(session['user'],file_path,content))
+        conn.commit()
+        id = cursor.lastrowid
+        query = 'SELECT email_post, post_time, item_name, file_path FROM contentitem WHERE item_id = (%s)'
+        cursor.execute(query,id)
+        data = cursor.fetchone()
         cursor.close()
-        return render_template('post.html',email=session['user'], post_content = lst)
+        return jsonify(data)
 
+@app.route("/post/blog")
+def blogs():
+    if 'user' in session:
+        cursor = conn.cursor()
+        query = 'SELECT email_post, post_time, item_name, file_path FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
+        cursor.execute(query,session['user'])
+        data = cursor.fetchall()
+        cursor.close()
+        return jsonify(data)
     else:
         return render_template('post.html',email="Visitor")
+
 
 @app.route("/groups",methods=['GET','POST'])
 def GroupManagement():
