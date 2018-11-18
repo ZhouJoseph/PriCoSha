@@ -41,9 +41,53 @@
     </p>
     </center>
 
+    <div id="form-div">
+        <form action="/create/new/group" method="POST">
+            <center>
+            <h6>Create New Group:</h6>
+            <div class="input-group form-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="">Name</span>
+                </div>
+                <input type="text" class="form-control" id= “groupname", name="groupname" placeholder="Group Name" required>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="" name="description" placeholder="Description" required>
+            </div>
+        <button type="submit" class="btn btn-primary" id="signUpBtn">Create</button>
+        </form>
+        </center>
+    </div>
 
-<!�� Create FG, Give it a Unique name, Might add description��>
-<!�� Might add User to FG, no duplication though,  ��>
+    <style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+    </style>
+
+
+    <div id="table-div">
+    <center>
+         <table>
+	        <th>Time</th>
+	        <th>Post</th>
+
+             {% for line in posts %}
+	        <tr>
+		        <td>{{line.ts}}</td>
+                <td>{{line.blog_post}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </center>
+    </div>
+
+
+
+
+
+<!-- Create FG, Give it a Unique name, Might add description-->
+<!-- Might add User to FG, no duplication though,  -->
 </body>
 
 </html>
