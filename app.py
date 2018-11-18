@@ -114,33 +114,36 @@ def signUpUser():
             msg = "User Already Exist"
             return redirect(url_for('signup',error=msg))
 
-@app.route("/post",methods=['GET', 'POST'])
+@app.route("/post",methods=['GET'])
 def post():
-    if request.method == 'GET':
-        if 'user' in session:
-            # fake data for groups
-            session['groups']=['first-group','second-group']
-            return render_template('post.html',email=session['user'])
-        else:
-            return render_template('post.html',email="Visitor")
-    if request.method == 'POST':
-        content = request.form["content"]
-        # file = request.form["file"]
-        # file_path = saveFile(file)
-        file_path = "No File Path Chosen Yet"
-        cursor = conn.cursor()
-        query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`) VALUES(%s,%s,%s)'
-        cursor.execute(query,(session['user'],file_path,content))
-        conn.commit()
-        id = cursor.lastrowid
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
-        cursor.execute(query,id)
-        data = cursor.fetchone()
-        cursor.close()
-        return jsonify({'data':data})
+    if 'user' in session:
+        # fake data for groups
+        session['groups']=['first-group','second-group']
+        return render_template('post.html',email=session['user'])
+    else:
+        return render_template('post.html',email="Visitor")
+
+@app.route("/post/posting",methods=['POST'])
+def postBlog():
+    content = request.form["content"]
+    # file = request.form["file"]
+    # file_path = saveFile(file)
+    file_path = "No File Path Chosen Yet"
+    cursor = conn.cursor()
+    query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`) VALUES(%s,%s,%s)'
+    cursor.execute(query,(session['user'],file_path,content))
+    conn.commit()
+    id = cursor.lastrowid
+    query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
+    cursor.execute(query,id)
+    data = cursor.fetchone()
+    cursor.close()
+    return jsonify({'data':data})
+
+
 
 @app.route("/post/blog")
-def blogs():
+def fetchBlogs():
     if 'user' in session:
         cursor = conn.cursor()
         query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
