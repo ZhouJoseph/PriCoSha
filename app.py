@@ -26,30 +26,7 @@ def saveFile(file):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return (app.config['UPLOAD_FOLDER']+filename)
-    
 
-class tuple_to_obj(tuple):
-    def __init__(self, tuple):
-        self.post_time = tuple[0]
-        self.item_name = tuple[1]
-
-class error:
-    def __init__(self,err=None):
-        self.UserAlreadyExist = False
-        self.UserNotFound = False
-        self.PwdNotMatch = False
-        self.EmailLength = False
-        self.SecPwdMatch = False
-        if err == "UserAlreadyExist":
-            self.UserAlreadyExist = True
-        elif err == "UserNotFound":
-            self.UserNotFound = True
-        elif err == "PwdNotMatch":
-            self.PwdNotMatch = True
-        elif err == "EmailLength":
-            self.EmailLength = True
-        elif err == "2PwdMatch":
-            self.SecPwdMatch = True
 
 @app.route("/")
 def index():
@@ -60,6 +37,7 @@ def login():
     error = request.args.get('error')
     return render_template("login.html",errors = error )
 
+# Login users
 @app.route("/login/user",methods=['GET','POST'])
 def loginUser():
     email = request.form["email"]
@@ -82,6 +60,7 @@ def signup():
     error = request.args.get('error')
     return render_template("signup.html",errors = error)
 
+# Sign up users
 @app.route("/signup/user",methods=['GET','POST'])
 def signUpUser():
     fname = request.form["fname"]
@@ -114,6 +93,7 @@ def signUpUser():
             msg = "User Already Exist"
             return redirect(url_for('signup',error=msg))
 
+# Render template for post page
 @app.route("/post",methods=['GET'])
 def post():
     if 'user' in session:
@@ -123,6 +103,7 @@ def post():
     else:
         return render_template('post.html',email="Visitor")
 
+# Posting a blog 
 @app.route("/post/posting",methods=['POST'])
 def postBlog():
     content = request.form["content"]
@@ -140,8 +121,7 @@ def postBlog():
     cursor.close()
     return jsonify({'data':data})
 
-
-
+# Fetching the viewable blogs
 @app.route("/post/blog")
 def fetchBlogs():
     if 'user' in session:
@@ -159,10 +139,44 @@ def fetchBlogs():
         cursor.close()
         return jsonify({'data':data})
 
-
-@app.route("/groups",methods=['GET','POST'])
+@app.route("/groups")
 def GroupManagement():
-    return render_template('GroupManagement.html')
+    # Faking Data
+    session['groups'] = [
+        {
+            'name':"Database study group",
+            'description': "Three desperate people..."
+        },
+        {
+            'name':"fake group",
+            'description':"fake description..."
+        }
+    ]
+    return render_template('GroupManagement.html',email=session['user'], groups=session['groups'])
+
+@app.route("/groups/fetch")
+def groupFetch():
+    '''
+        Do Stuff Here
+        1. Connect to DB
+        2. Select the groups I belong to From DB
+        3. Remember to commit and close
+        4. Return jsonify(fetching result)
+    '''
+    return "How About This"
+
+@app.route("/groups/create",methods=['POST'])
+def createGroup():
+    name = request.form['groupname']
+    description = request.form['description']
+    '''
+        Do Stuff Here
+        1. Connect to DB
+        2. Insert into DB
+        3. Remember to commit and close
+    '''
+    # Return statement is for updating UI using AJAX
+    return jsonify({'name':name, 'description':description})
 
 @app.route("/logout")
 def logout():

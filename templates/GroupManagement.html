@@ -35,59 +35,89 @@
             </div>
         </div>
     </nav>
-    <center>
-    <p>
-        Hi, {{email}}
-    </p>
-    </center>
-
     <div id="form-div">
-        <form action="/create/new/group" method="POST">
-            <center>
-            <h6>Create New Group:</h6>
-            <div class="input-group form-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="">Name</span>
-                </div>
-                <input type="text" class="form-control" id= "groupname" name="groupname" placeholder="Group Name" required>
+        <center>
+        <h6>Create New Group:</h6>
+        <div class="input-group form-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="">Name</span>
             </div>
-            <div class="form-group">
-                <input type="text" class="form-control" id="" name="description" placeholder="Description" required>
-            </div>
-        <button type="submit" class="btn btn-primary" id="signUpBtn">Create</button>
-        </form>
+            <input type="text" class="form-control" id= "groupname" name="groupname" placeholder="Group Name" required>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="description" name="description" placeholder="Description" required>
+        </div>
+        <button onclick="createGroup()" class="btn btn-primary" style="width:100%">Create</button>
         </center>
     </div>
 
-    <style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-    </style>
 
-
+    <!-- If you groups/fetch, you can get rid of this,
+    and do all the stuff in ajax call(in a function!)
+    That's more doable because after we create a group
+    We still need to update the UI.
+    However, doing the following cannot allow us to instant update -->
     <div id="table-div">
     <center>
          <table>
 	        <th>GroupName</th>
-	        <th>Owner</th>
-
-             {% for line in belong %}
+            <th>Description</th>
+            {% for line in groups %}
 	        <tr>
-		        <td>{{line.fg_name}}</td>
-                <td>{{line.owner}}</td>
+		        <td>{{line.name}}</td>
+                <td>{{line.description}}</td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </table>
     </center>
     </div>
-
-
-
-
-
 <!-- Create FG, Give it a Unique name, Might add description-->
 <!-- Might add User to FG, no duplication though,  -->
+
+<script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
+<script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<script>
+    function createGroup(){
+        var groupname = $('#groupname').val();
+        var description = $('#description').val();
+        $.ajax({
+            type: "POST",
+            url: "/groups/create",
+            data: {
+                "groupname": groupname,
+                "description": description,
+            },
+            success: function(info){
+                alert(info.name + "  "+info.description);
+                /*
+                    Do stuff here.
+                    1. receive the post data,
+                    2. call updateGroupUI, you might wanna pass parameter to the function.
+                */
+            },
+            error: function(err){
+                alert("err");
+            }
+        });
+    }
+
+    fetchGroup();
+
+    function fetchGroup(){
+        /*
+            Do stuff here.
+            1. form an ajax GET request
+            2. receive data from the server
+            3. call updateGroupUI(), you might wanna pass parameter to the function.
+        */
+    }
+
+    function updateGroupUI(){
+        // update the group UI
+        // update UI using JQuery. Example: append() / prepend(), you can google these.
+    }
+</script>
+
 </body>
 
 </html>
