@@ -164,6 +164,35 @@ def fetchBlogs():
 def GroupManagement():
     return render_template('GroupManagement.html')
 
+@app.route("/groups/new",methods=['POST'])
+def newgroup():
+    fg_name = request.form["groupname"]
+    description = request.form["description"]
+
+    if len(fg_name) > 20:
+        msg = "Sorry, but group name length cannot exceed 20"
+        return redirect(url_for('GroupManagement',error=msg))
+    if len(description) > 1000:
+        msg = "Sorry, but description length cannot exceed 1000"
+        return redirect(url_for('GroupManagement',error=msg))
+    cursor = conn.cursor()
+    result = None
+    try:
+        sql = "select * from friendgroup where owner_email = (%s)"
+        cursor.execute(sql, (fgname))
+        result = cursor.fetchone()
+    finally:
+        if not result:
+            sql = "insert into friendgroup(owner_email, fg_name, description) Values (%s,%s,%s)"
+            cursor.execute(sql, (session['user'], fg_name, description))
+            sql = "insert into belong(email, owner_email, fg_name) Values (%s,%s,%s)"
+            cursor.execute(sql, (session['user'], session['user'], fg_name))
+            return redirect(url_for("GroupManagement"))
+        else:
+            msg = "Group Already Exist"
+            return redirect(url_for('GroupManagement', error=msg))
+
+
 @app.route("/logout")
 def logout():
     session.clear()
