@@ -133,7 +133,7 @@ def fetchBlogs():
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true AND post_time>= DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()
