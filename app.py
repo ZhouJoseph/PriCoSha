@@ -133,11 +133,31 @@ def fetchBlogs():
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true AND post_time>= DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
+
+# Fetching detailed info of a specific blog
+@app.route("/post/blog/<item_id>")
+def detailedBlog(item_id):
+    cursor = conn.cursor()
+    contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
+    cursor.execute(contentItem,item_id)
+    content = cursor.fetchone()
+
+    tag = 'SELECT fname,lname FROM person JOIN Tag ON (Tag.email_tagged = person.email) WHERE Tag.item_id = (%s) AND Tag.status=true'
+    cursor.execute(tag,item_id)
+    taggee = cursor.fetchall()
+    '''
+    rate = ''
+    cursor.execute(rate)
+    rating = cursor.fetchall()
+    '''
+    cursor.close()
+    return jsonify({'content':content,'tag':taggee})
+
 
 @app.route("/groups")
 def GroupManagement():
