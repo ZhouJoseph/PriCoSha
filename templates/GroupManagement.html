@@ -42,15 +42,16 @@
             <div class="input-group-prepend">
                 <span class="input-group-text" id="">Name</span>
             </div>
-            <input type="text" class="form-control" id= "groupname" name="groupname" placeholder="Group Name" required>
+            <input type="text" class="form-control" id= "groupname" name="groupname" placeholder="Group Name" autocomplete="off">
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="description" name="description" placeholder="Description" required>
+            <input type="text" class="form-control" id="description" name="description" placeholder="Description" autocomplete="off">
         </div>
         <button onclick="createGroup()" class="btn btn-primary" style="width:100%">Create</button>
-        </center>
-    </div>
 
+        </center>
+        </form>
+    </div>
 
     <!-- If you groups/fetch, you can get rid of this,
     and do all the stuff in ajax call(in a function!)
