@@ -143,20 +143,23 @@ def fetchBlogs():
 @app.route("/post/blog/<item_id>")
 def detailedBlog(item_id):
     cursor = conn.cursor()
+
+    # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)
     content = cursor.fetchone()
 
+    # taggee of a post
     tag = 'SELECT fname,lname FROM person JOIN Tag ON (Tag.email_tagged = person.email) WHERE Tag.item_id = (%s) AND Tag.status=true'
     cursor.execute(tag,item_id)
     taggee = cursor.fetchall()
-    '''
-    rate = ''
-    cursor.execute(rate)
+
+    # rating of a post
+    rate = 'SELECT email, rate_time, emoji FROM rate where item_id = (%s)'
+    cursor.execute(rate,item_id)
     rating = cursor.fetchall()
-    '''
     cursor.close()
-    return jsonify({'content':content,'tag':taggee})
+    return jsonify({'content':content,'tag':taggee,'rate':rating})
 
 
 @app.route("/groups")

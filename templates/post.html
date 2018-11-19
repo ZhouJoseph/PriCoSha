@@ -94,7 +94,7 @@
         function generateSpan(email,time,content,path,item_id){
             var tag = 'tag';
             var comment = 'comment';
-            var span = '<span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted">Item_ID:'+item_id+'</small></div></span>';
+            var span = '<a style="text-decoration:none;" href="/post/blog/'+item_id+'"><span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted" id="item_id'+item_id+'">Item_ID:'+item_id+'</small></div></span></a>';
             return span;
         };
 
