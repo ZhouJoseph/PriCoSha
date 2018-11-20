@@ -234,7 +234,7 @@ def createGroup():
             ?***********************************************************************************************?
             ?5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end?
             ?***********************************************************************************************?
-            
+            You right, we need to return group already exist
     '''
     # Return statement is for updating UI using AJAX
     return jsonify({'name':fg_name, 'description':description})
