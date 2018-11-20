@@ -180,49 +180,34 @@ def GroupManagement():
 
 @app.route("/groups/fetch")
 def groupFetch():
+    if 'user' in session:
+        cursor = conn.cursor()
+        query = 'select belong.fg_name as name, belong.owner_email as owner from belong where belong.email = (%s)'
+        cursor.execute(query,session['user'])
+        data = cursor.fetchall()
+        cursor.close()
+        return jsonify({'data':data})
+    else:
+        '''log in first'''
     '''
         Do Stuff Here
-        1. Connect to DB
-        2. Select the groups I belong to From DB
-        3. Remember to commit and close
-        4. Return jsonify(fetching result)
+        1. Connect to DB Check!
+        2. Select the groups I belong to From DB Check!
+        3. Remember to commit and close Check!
+        4. Return jsonify(fetching result) Check!
     '''
+
     return "How About This"
 
 @app.route("/groups/create",methods=['POST'])
 def createGroup():
+    cursor = conn.cursor()
     fg_name = request.form['groupname']
     description = request.form['description']
-    '''
-        Do Stuff Here
-        1. Connect to DB
-        2. Insert into DB
-        3. Remember to commit and close
-        4. You don't need to handle errors. There are a little bit more you need to know before you do that
-        5. SQL Instruction:
-            5.1 fg_name and owner_email are the composite primary key
-            5.2 After inserting, plz commit!!!
-            5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end
-    '''
-    # Return statement is for updating UI using AJAX
-    return jsonify({'name':fg_name, 'description':description})
-
-@app.route("/groups/new",methods=['POST'])
-def newgroup():
-    fg_name = request.form["groupname"]
-    description = request.form["description"]
-
-    if len(fg_name) > 20:
-        msg = "Sorry, but group name length cannot exceed 20"
-        return redirect(url_for('GroupManagement',error=msg))
-    if len(description) > 1000:
-        msg = "Sorry, but description length cannot exceed 1000"
-        return redirect(url_for('GroupManagement',error=msg))
-    cursor = conn.cursor()
     result = None
     try:
-        sql = "select * from friendgroup where owner_email = (%s)"
-        cursor.execute(sql, (fgname))
+        sql = "select * from friendgroup where owner_email = (%s) and fg_name = (%s)"
+        cursor.execute(sql, (email), (fgname))
         result = cursor.fetchone()
     finally:
         if not result:
@@ -230,11 +215,29 @@ def newgroup():
             cursor.execute(sql, (session['user'], fg_name, description))
             sql = "insert into belong(email, owner_email, fg_name) Values (%s,%s,%s)"
             cursor.execute(sql, (session['user'], session['user'], fg_name))
-            return redirect(url_for("GroupManagement"))
+            conn.commit()
+            cursor.close()
+            return jsonify({'name': fg_name, 'description': description})
         else:
             msg = "Group Already Exist"
             return redirect(url_for('GroupManagement', error=msg))
-
+    '''
+        Do Stuff Here
+        1. Connect to DB Check!
+        2. Insert into DB Check!
+        3. Remember to commit and close Check!
+        4. You don't need to handle errors. There are a little bit more you need to know before you do that OK!
+        5. SQL Instruction:
+            5.1 fg_name and owner_email are the composite primary key  Check!
+            5.2 After inserting, plz commit!!!  Check!
+            
+            ?***********************************************************************************************?
+            ?5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end?
+            ?***********************************************************************************************?
+            
+    '''
+    # Return statement is for updating UI using AJAX
+    return jsonify({'name':fg_name, 'description':description})
 
 @app.route("/logout")
 def logout():

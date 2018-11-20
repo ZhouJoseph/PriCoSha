@@ -35,6 +35,8 @@
             </div>
         </div>
     </nav>
+
+    #Create New Group
     <div id="form-div">
         <center>
         <h6>Create New Group:</h6>
@@ -48,7 +50,6 @@
             <input type="text" class="form-control" id="description" name="description" placeholder="Description" autocomplete="off">
         </div>
         <button onclick="createGroup()" class="btn btn-primary" style="width:100%">Create</button>
-
         </center>
         </form>
     </div>
@@ -58,60 +59,69 @@
     That's more doable because after we create a group
     We still need to update the UI.
     However, doing the following cannot allow us to instant update -->
-    <div id="table-div">
-    <center>
-         <table>
-	        <th>GroupName</th>
-            <th>Description</th>
-            {% for line in groups %}
-	        <tr>
-		        <td>{{line.name}}</td>
-                <td>{{line.description}}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </center>
-    </div>
-<!-- Create FG, Give it a Unique name, Might add description-->
-<!-- Might add User to FG, no duplication though,  -->
 
-<script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
-<script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<script>
-    function createGroup(){
-        var groupname = $('#groupname').val();
-        var description = $('#description').val();
+#Create FG, Give it a Unique name, Might add description
+#Might add User to FG, no duplication allowed
+
+    <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap-filestyle.min.js')}}"> </script>
+
+    <script>
+        function createGroup(){
+            var groupname = $('#groupname').val();
+            var description = $('#description').val();
+            $.ajax({
+                type: "POST",
+                url: "/groups/create",
+                data: {
+                    "groupname": groupname,
+                    "description": description,
+                },
+                success: function(info){
+                    alert(info.name + "  "+info.description);
+                    /*
+                        Do stuff here.
+                        1. receive the post data,
+                        2. call updateGroupUI, you might wanna pass parameter to the function.
+                    */
+                },
+                error: function(err){
+                    alert("err");
+                }
+            });
+        }
+
+    /*Get Group with AJAX*/
+    function generateSpan(email,time,content,path,item_id){
+        var tag = 'tag';
+        var comment = 'comment';
+        var span = '<a style="text-decoration:none;" href="/post/blog/'+item_id+'"><span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted" id="item_id'+item_id+'">Item_ID:'+item_id+'</small></div></span></a>';
+        return span;
+    };
+
         $.ajax({
-            type: "POST",
-            url: "/groups/create",
-            data: {
-                "groupname": groupname,
-                "description": description,
-            },
-            success: function(info){
-                alert(info.name + "  "+info.description);
-                /*
-                    Do stuff here.
-                    1. receive the post data,
-                    2. call updateGroupUI, you might wanna pass parameter to the function.
-                */
+            type: "GET",
+            url: "/groups/fetch",
+            success: function(posts){ /*is posts correct???*/
+                if(posts.data){
+                    for(var i = 0; i < posts.data.length; i++){
+                        var span = generateSpan(posts.data[i][0],posts.data[i][1],posts.data[i][2],posts.data[i][3],posts.data[i][4]);
+                        $("#posts").append(span);
+                    }
+                }
             },
             error: function(err){
                 alert("err");
             }
-        });
-    }
-
-    fetchGroup();
-
-    function fetchGroup(){
         /*
             Do stuff here.
             1. form an ajax GET request
             2. receive data from the server
             3. call updateGroupUI(), you might wanna pass parameter to the function.
         */
-    }
+    });
+
 
     function updateGroupUI(){
         // update the group UI
