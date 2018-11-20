@@ -130,7 +130,6 @@ def fetchBlogs():
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
-        conn.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
