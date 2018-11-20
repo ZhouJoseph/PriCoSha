@@ -20,29 +20,148 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('index')}}">Home</a>
+                        <a class="nav-link" href="{{url_for('index')}}">home</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="{{url_for('post')}}">Post</a>
+                        <a class="nav-link" href="{{url_for('post')}}">post</a>
                     </li>
+                    {% if 'user' not in session %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('login')}}">log in</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
                     </li>
+                    {% endif %}
+                    {% if 'user' in session %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('Group')}}">your groups</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('logout')}}">logout</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-    <center>
-    <p>
-        Hi, {{email}}
-    </p>
-    </center>
+        <center>
+            <h3>Hi {{email}}</h3>
+            {% if 'user' in session %}
+            <div id="postForm" style="width:50%;min-width: 400px;">
+                <a href="#myModal" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal" style="width:100%">What's on your mind</a>
+
+                <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 id="myModalLabel">Please fill out the info</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="myForm" utocomplete="off">
+                                    <input type="file" class="filestyle" data-buttonBefore="true" id="file" />
+                                    <input style="margin-top:2px;" class="form-control" type="text" id="blog" name="content" placeholder="Plz name your post" required/>
+                                    <p>Who do you want to share with?</p>
+                                    {% for group in session['groups'] %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" onclick="handleClick(this)" id={{group}}>
+                                        <!--when checked, add group to array-->
+                                        <label class="form-check-label" for={{group}}>{{group}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </form>
+                                <button class="btn btn-outline-dark mb-2" type="submit" style="width:100%" onclick="addPost()">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if 'user' not in session %}
+            <p>You must <a href="{{url_for('login')}}">log in</a> to post the content</p>
+            {% endif %}
+            <div class="list-group" style="width:50%;min-width: 400px" id="posts"></div>
+        </center>
 
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap-filestyle.min.js')}}"> </script>
+
+
+
+    <script>
+        $(":file").filestyle({buttonBefore: true});
+
+        function generateSpan(email,time,content,path,item_id){
+            var span = '<a style="text-decoration:none;" href="/post/blog/'+item_id+'"><span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted" id="item_id'+item_id+'">Item_ID:'+item_id+'</small></div></span></a>';
+            return span;
+        };
+
+        fetch();
+        function fetch(){
+            $.ajax({
+                type: "GET",
+                url: "/post/blog",
+                success: function (posts) {
+                    if (posts.data) {
+                        for (var i = 0; i < posts.data.length; i++) {
+                            // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id
+                            // generateSpan generates the post block you see on post.html
+                            var span = generateSpan(posts.data[i][0], posts.data[i][1], posts.data[i][2], posts.data[i][3], posts.data[i][4]);
+                            // append: append to the last of the div
+                            // because posts are in anti-chronological order
+                            $("#posts").append(span);
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert("err");
+                }
+            });
+        };
+
+        function addPost(){
+            var content = $("#blog").val();
+            $.ajax({
+                type:"POST",
+                data:{
+                    "content": content,
+                },
+                url: "/post/posting",
+                success: function(posts){
+                    $("#myModal").modal('hide');
+                    // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id
+                    // generateSpan generates the post block you see on post.html
+                    var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4]);
+                    // prepend: add to the top of the div with id=posts
+                    $("#posts").prepend(span);
+                },
+                error: function(err){
+                    alert("umm");
+                }
+            })
+        }
+
+        myForm = document.getElementById("myForm");
+        var arr = []
+        function handleClick(a){
+            console.log("Here!!!")
+            var checkbox = document.getElementById("{{group}}")
+            if (checkbox.checked){
+              arr.push(a);
+            }
+            else{
+                arr.pop(a);
+            }
+
+
+
+
+        }
+
+    </script>
+
 </body>
 </html>
