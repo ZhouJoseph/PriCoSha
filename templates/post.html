@@ -97,22 +97,25 @@
             var span = '<a style="text-decoration:none;" href="/post/blog/'+item_id+'"><span class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + email + '</h5>' + '<small class="text-muted">' + time+ '</small></div>' + '<p class="mb-1">'+content+'</p>' + '<div class="d-flex w-100 justify-content-between"><small class="text-muted">'+ path +'</small>' +'<small class="text-muted" id="item_id'+item_id+'">Item_ID:'+item_id+'</small></div></span></a>';
             return span;
         };
-
-        $.ajax({
-            type: "GET",
-            url: "/post/blog",
-            success: function(posts){
-                if(posts.data){
-                    for(var i = 0; i < posts.data.length; i++){
-                        var span = generateSpan(posts.data[i][0],posts.data[i][1],posts.data[i][2],posts.data[i][3],posts.data[i][4]);
-                        $("#posts").append(span);
+        
+        fetch();
+        function fetch(){
+            $.ajax({
+                type: "GET",
+                url: "/post/blog",
+                success: function (posts) {
+                    if (posts.data) {
+                        for (var i = 0; i < posts.data.length; i++) {
+                            var span = generateSpan(posts.data[i][0], posts.data[i][1], posts.data[i][2], posts.data[i][3], posts.data[i][4]);
+                            $("#posts").append(span);
+                        }
                     }
+                },
+                error: function (err) {
+                    alert("err");
                 }
-            },
-            error: function(err){
-                alert("err");
-            }
-        });
+            });
+        };
 
         function addPost(){
             var content = $("#blog").val();
@@ -124,7 +127,10 @@
                 url: "/post/posting",
                 success: function(posts){
                     $("#myModal").modal('hide');
+                    // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id
                     var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4]);
+                    // generateSpan generates the post block you see on post.html
+                    // prepend: add to the top of the div with id=posts
                     $("#posts").prepend(span);
                 },
                 error: function(err){

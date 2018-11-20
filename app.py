@@ -106,6 +106,7 @@ def post():
 # Posting a blog 
 @app.route("/post/posting",methods=['POST'])
 def postBlog():
+
     content = request.form["content"]
     # file = request.form["file"]
     # file_path = saveFile(file)
@@ -118,18 +119,18 @@ def postBlog():
     query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
     cursor.execute(query,id)
     data = cursor.fetchone()
-    cursor.close()
     return jsonify({'data':data})
 
 # Fetching the viewable blogs
 @app.route("/post/blog")
 def fetchBlogs():
-    if 'user' in session:
+    if 'user' in session:      
         cursor = conn.cursor()
         query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
+        conn.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
@@ -159,6 +160,7 @@ def detailedBlog(item_id):
     cursor.execute(rate,item_id)
     rating = cursor.fetchall()
     cursor.close()
+    
     return jsonify({'content':content,'tag':taggee,'rate':rating})
 
 
