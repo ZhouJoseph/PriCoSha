@@ -2,6 +2,8 @@ from flask import Flask, request, render_template,redirect,url_for,jsonify,sessi
 import pymysql.cursors
 import hashlib
 import os
+import time
+import datetime
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = '/img'
@@ -112,7 +114,6 @@ def post():
 # Posting a blog
 @app.route("/post/posting",methods=['POST'])
 def postBlog():
-
     content = request.form["content"]
     print(request.form)
     #print(request.form.get('content'))
@@ -122,9 +123,11 @@ def postBlog():
     if request.form['is_pubBox']=='true':
         is_pubB = True
     file_path = "No File Path Chosen Yet"
+    ts = time.time()
+    timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     cursor = conn.cursor()
-    query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`,`is_pub`) VALUES(%s,%s,%s,%s)'
-    cursor.execute(query,(session['user'],file_path,content,is_pubB))
+    query = 'INSERT INTO `contentitem`(`email_post`,`post_time`,`file_path`,`item_name`,`is_pub`) VALUES(%s,%s,%s,%s,%s)'
+    cursor.execute(query,(session['user'],timestamp,file_path,content,is_pubB))
     conn.commit()
     id = cursor.lastrowid
     query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
@@ -141,7 +144,7 @@ def postBlog():
 def fetchBlogs():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE email_post = (%s) or is_pub = true ORDER BY post_time DESC'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
