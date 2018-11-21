@@ -217,7 +217,7 @@ def createGroup():
             return jsonify({'fg_name': fg_name, 'owner':session['user'], 'description': description})
         else:
             msg = "Group Already Exist"
-<<<<<<< HEAD
+
             return redirect(url_for('GroupManagement', error=msg))
     '''
         Do Stuff Here
@@ -236,9 +236,7 @@ def createGroup():
     '''
     # Return statement is for updating UI using AJAX
     return jsonify({'name':fg_name, 'description':description})
-=======
-            return redirect(url_for('GroupManagement',error=msg))
->>>>>>> ffd998ed81c4d84976b50331885975985e47b50a
+            #return redirect(url_for('GroupManagement',error=msg))
 
 @app.route("/logout")
 def logout():
