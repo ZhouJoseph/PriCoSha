@@ -114,12 +114,17 @@ def post():
 def postBlog():
 
     content = request.form["content"]
-    # file = request.form["file"]
-    # file_path = saveFile(file)
+    print(request.form)
+    #print(request.form.get('content'))
+    #print(request.form.get('is_pubBox'))
+    #print(request.form.get('pubID'))
+    is_pubB = False
+    if request.form['is_pubBox']=='true':
+        is_pubB = True
     file_path = "No File Path Chosen Yet"
     cursor = conn.cursor()
-    query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`) VALUES(%s,%s,%s)'
-    cursor.execute(query,(session['user'],file_path,content))
+    query = 'INSERT INTO `contentitem`(`email_post`,`file_path`,`item_name`,`is_pub`) VALUES(%s,%s,%s,%s)'
+    cursor.execute(query,(session['user'],file_path,content,is_pubB))
     conn.commit()
     id = cursor.lastrowid
     query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
@@ -136,14 +141,14 @@ def postBlog():
 def fetchBlogs():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id,is_pub FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id,is_pub FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()

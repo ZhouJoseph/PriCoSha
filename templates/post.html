@@ -59,26 +59,14 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             </div>
                             <div class="modal-body">
-                                <form id="myForm" utocomplete="off">
+                                <form id="myForm" autocomplete="off">
                                     <input type="file" class="filestyle" data-buttonBefore="true" id="file" />
                                     <input style="margin-top:2px;" class="form-control" type="text" id="blog" name="content" placeholder="Plz name your post" required/>
                                     <p>Who do you want to share with?</p>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="public">
+                                        <input type="checkbox" id="pubID" name="is_pubBox" value="PUBLIC BABY" checked="checked"/>
                                         <label class="form-check-label" for="public">public</label>
                                     </div>
-                                    {% for group in session['groups'] %}
-                                    <div class="form-check">
-<<<<<<< HEAD
-                                        <input class="form-check-input" type="checkbox" name = "check" onclick="handleClick(this)" id={{group}}>
-                                        <!--when checked, add group to array-->
-                                        <label class="form-check-label" for={{group}}>{{group}}</label>
-=======
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label">owner:{{group[0]}}; name:{{group[1]}}</label>
->>>>>>> ffd998ed81c4d84976b50331885975985e47b50a
-                                    </div>
-                                    {% endfor %}
                                 </form>
                                 <button class="btn btn-outline-dark mb-2" type="submit" style="width:100%" onclick="addPost()">Submit</button>
                             </div>
@@ -118,7 +106,7 @@
                         for (var i = 0; i < posts.data.length; i++) {
                             // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id
                             // generateSpan generates the post block you see on post.html
-                            var span = generateSpan(posts.data[i][0], posts.data[i][1], posts.data[i][2], posts.data[i][3], posts.data[i][4]);
+                            var span = generateSpan(posts.data[i][0], posts.data[i][1], posts.data[i][2], posts.data[i][3], posts.data[i][4], posts.data[i][5]);
                             // append: append to the last of the div
                             // because posts are in anti-chronological order
                             $("#posts").append(span);
@@ -139,17 +127,23 @@
 
         function addPost(){
             var content = $("#blog").val();
+            var isPub = false;
+            if($("#pubID").prop("checked")){
+              isPub = true;
+            }
+//            alert($("#pubID").prop("checked"));
             $.ajax({
                 type:"POST",
                 data:{
                     "content": content,
+                    "is_pubBox": isPub
                 },
                 url: "/post/posting",
                 success: function(posts){
                     $("#myModal").modal('hide');
-                    // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id
+                    // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id 5:is_pubBool;
                     // generateSpan generates the post block you see on post.html
-                    var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4]);
+                    var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4],posts.data[5]);
                     // prepend: add to the top of the div with id=posts
                     $("#posts").prepend(span);
                 },
