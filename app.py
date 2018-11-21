@@ -103,7 +103,7 @@ def post():
     else:
         return render_template('post.html',email="Visitor")
 
-# Posting a blog 
+# Posting a blog
 @app.route("/post/posting",methods=['POST'])
 def postBlog():
 
@@ -119,21 +119,25 @@ def postBlog():
     query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
     cursor.execute(query,id)
     data = cursor.fetchone()
+
+    #get the information that what groups this user is in
+    #make an array of those groups
+    #return to html file to let user choose
     return jsonify({'data':data})
 
 # Fetching the viewable blogs
 @app.route("/post/blog")
 def fetchBlogs():
-    if 'user' in session:      
+    if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id,is_pub FROM contentitem WHERE email_post = (%s) ORDER BY post_time DESC'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path,item_id,is_pub FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()
@@ -159,7 +163,7 @@ def detailedBlog(item_id):
     cursor.execute(rate,item_id)
     rating = cursor.fetchall()
     cursor.close()
-    
+
     return jsonify({'content':content,'tag':taggee,'rate':rating})
 
 
@@ -230,7 +234,7 @@ def createGroup():
         5. SQL Instruction:
             5.1 fg_name and owner_email are the composite primary key  Check!
             5.2 After inserting, plz commit!!!  Check!
-            
+
             ?***********************************************************************************************?
             ?5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end?
             ?***********************************************************************************************?

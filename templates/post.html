@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,7 +65,8 @@
                                     <p>Who do you want to share with?</p>
                                     {% for group in session['groups'] %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id={{group}}>
+                                        <input class="form-check-input" type="checkbox" name = "check" onclick="handleClick(this)" id={{group}}>
+                                        <!--when checked, add group to array-->
                                         <label class="form-check-label" for={{group}}>{{group}}</label>
                                     </div>
                                     {% endfor %}
@@ -87,6 +88,8 @@
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap-filestyle.min.js')}}"> </script>
+
+
 
     <script>
         $(":file").filestyle({buttonBefore: true});
@@ -139,6 +142,29 @@
                     alert("umm");
                 }
             })
+        }
+
+        //myForm = document.getElementById("myForm");
+        //var arr = [];
+        function handleClick(a){
+            //console.log("arr=", arr);
+            //alert("group clicked!!!")
+            //var checkbox = document.getElementsByClassName("form-check-input");
+            //var returnvalue = jQuery("#checkbox").prop("checked");
+            //alert(returnvalue);
+            //if (checkbox.checked == true){
+              //alert(checkbox.checked);
+              //arr.push(a);
+
+            //}
+            //else{
+                //alert(checkbox.checked);
+                //arr.pop(a);
+            //}
+
+
+
+
         }
 
     </script>
