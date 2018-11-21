@@ -27,6 +27,13 @@ def saveFile(file):
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return (app.config['UPLOAD_FOLDER']+filename)
 
+def getGroups(email):
+    cursor = conn.cursor()
+    query = "SELECT owner_email, fg_name FROM belong where email=(%s)"
+    cursor.execute(query,email)
+    groups = cursor.fetchall()
+    cursor.close()
+    return groups
 
 @app.route("/")
 def index():
@@ -94,11 +101,10 @@ def signUpUser():
             return redirect(url_for('signup',error=msg))
 
 # Render template for post page
-@app.route("/post",methods=['GET'])
+@app.route("/post")
 def post():
     if 'user' in session:
-        # fake data for groups
-        session['groups']=['first-group','second-group']
+        session['groups']=getGroups(session['user'])
         return render_template('post.html',email=session['user'])
     else:
         return render_template('post.html',email="Visitor")
@@ -169,41 +175,28 @@ def detailedBlog(item_id):
 
 @app.route("/groups")
 def GroupManagement():
-    # Faking Data
-    session['groups'] = [
-        {
-            'name':"Database study group",
-            'description': "Three desperate people..."
-        },
-        {
-            'name':"fake group",
-            'description':"fake description..."
-        }
-    ]
-    return render_template('GroupManagement.html',email=session['user'], groups=session['groups'])
+    if 'user' in session:
+        error = request.args.get('error')
+
+        return render_template('GroupManagement.html',errors = error)
+    else:
+        msg = "You need to log in first"
+        return redirect(url_for('login',error=msg))
 
 @app.route("/groups/fetch")
 def groupFetch():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'select belong.fg_name as name, belong.owner_email as owner from belong where belong.email = (%s)'
+        query = 'select belong.fg_name,friendgroup.description,belong.owner_email from belong join friendgroup using(owner_email,fg_name) where belong.email = (%s)'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
-        '''log in first'''
-    '''
-        Do Stuff Here
-        1. Connect to DB Check!
-        2. Select the groups I belong to From DB Check!
-        3. Remember to commit and close Check!
-        4. Return jsonify(fetching result) Check!
-    '''
+        msg = "You need to log in first"
+        return redirect(url_for('login',error=msg))
 
-    return "How About This"
-
-@app.route("/groups/create",methods=['POST'])
+@app.route("/groups/create",methods=['GET','POST'])
 def createGroup():
     cursor = conn.cursor()
     fg_name = request.form['groupname']
@@ -211,7 +204,7 @@ def createGroup():
     result = None
     try:
         sql = "select * from friendgroup where owner_email = (%s) and fg_name = (%s)"
-        cursor.execute(sql, (email), (fgname))
+        cursor.execute(sql, (session['user'],fg_name))
         result = cursor.fetchone()
     finally:
         if not result:
@@ -221,9 +214,10 @@ def createGroup():
             cursor.execute(sql, (session['user'], session['user'], fg_name))
             conn.commit()
             cursor.close()
-            return jsonify({'name': fg_name, 'description': description})
+            return jsonify({'fg_name': fg_name, 'owner':session['user'], 'description': description})
         else:
             msg = "Group Already Exist"
+<<<<<<< HEAD
             return redirect(url_for('GroupManagement', error=msg))
     '''
         Do Stuff Here
@@ -242,6 +236,9 @@ def createGroup():
     '''
     # Return statement is for updating UI using AJAX
     return jsonify({'name':fg_name, 'description':description})
+=======
+            return redirect(url_for('GroupManagement',error=msg))
+>>>>>>> ffd998ed81c4d84976b50331885975985e47b50a
 
 @app.route("/logout")
 def logout():

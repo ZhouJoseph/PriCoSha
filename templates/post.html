@@ -63,11 +63,20 @@
                                     <input type="file" class="filestyle" data-buttonBefore="true" id="file" />
                                     <input style="margin-top:2px;" class="form-control" type="text" id="blog" name="content" placeholder="Plz name your post" required/>
                                     <p>Who do you want to share with?</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="public">
+                                        <label class="form-check-label" for="public">public</label>
+                                    </div>
                                     {% for group in session['groups'] %}
                                     <div class="form-check">
+<<<<<<< HEAD
                                         <input class="form-check-input" type="checkbox" name = "check" onclick="handleClick(this)" id={{group}}>
                                         <!--when checked, add group to array-->
                                         <label class="form-check-label" for={{group}}>{{group}}</label>
+=======
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">owner:{{group[0]}}; name:{{group[1]}}</label>
+>>>>>>> ffd998ed81c4d84976b50331885975985e47b50a
                                     </div>
                                     {% endfor %}
                                 </form>
@@ -115,6 +124,12 @@
                             $("#posts").append(span);
                         }
                     }
+                    if (posts.gruop){
+                        for (var i = 0; i < posts.data.length; i++) {
+
+                        }
+                    }
+
                 },
                 error: function (err) {
                     alert("err");
