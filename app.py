@@ -27,6 +27,13 @@ def saveFile(file):
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return (app.config['UPLOAD_FOLDER']+filename)
 
+def getGroups(email):
+    cursor = conn.cursor()
+    query = "SELECT owner_email, fg_name FROM belong where email=(%s)"
+    cursor.execute(query,email)
+    groups = cursor.fetchall()
+    cursor.close()
+    return groups
 
 @app.route("/")
 def index():
@@ -94,11 +101,10 @@ def signUpUser():
             return redirect(url_for('signup',error=msg))
 
 # Render template for post page
-@app.route("/post",methods=['GET'])
+@app.route("/post")
 def post():
     if 'user' in session:
-        # fake data for groups
-        session['groups']=['first-group','second-group']
+        session['groups']=getGroups(session['user'])
         return render_template('post.html',email=session['user'])
     else:
         return render_template('post.html',email="Visitor")
@@ -165,41 +171,28 @@ def detailedBlog(item_id):
 
 @app.route("/groups")
 def GroupManagement():
-    # Faking Data
-    session['groups'] = [
-        {
-            'name':"Database study group",
-            'description': "Three desperate people..."
-        },
-        {
-            'name':"fake group",
-            'description':"fake description..."
-        }
-    ]
-    return render_template('GroupManagement.html',email=session['user'], groups=session['groups'])
+    if 'user' in session:
+        error = request.args.get('error')
+
+        return render_template('GroupManagement.html',errors = error)
+    else:
+        msg = "You need to log in first"
+        return redirect(url_for('login',error=msg))
 
 @app.route("/groups/fetch")
 def groupFetch():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'select belong.fg_name as name, belong.owner_email as owner from belong where belong.email = (%s)'
+        query = 'select belong.fg_name,friendgroup.description,belong.owner_email from belong join friendgroup using(owner_email,fg_name) where belong.email = (%s)'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
-        '''log in first'''
-    '''
-        Do Stuff Here
-        1. Connect to DB Check!
-        2. Select the groups I belong to From DB Check!
-        3. Remember to commit and close Check!
-        4. Return jsonify(fetching result) Check!
-    '''
+        msg = "You need to log in first"
+        return redirect(url_for('login',error=msg))
 
-    return "How About This"
-
-@app.route("/groups/create",methods=['POST'])
+@app.route("/groups/create",methods=['GET','POST'])
 def createGroup():
     cursor = conn.cursor()
     fg_name = request.form['groupname']
@@ -207,7 +200,7 @@ def createGroup():
     result = None
     try:
         sql = "select * from friendgroup where owner_email = (%s) and fg_name = (%s)"
-        cursor.execute(sql, (email), (fgname))
+        cursor.execute(sql, (session['user'],fg_name))
         result = cursor.fetchone()
     finally:
         if not result:
@@ -217,27 +210,10 @@ def createGroup():
             cursor.execute(sql, (session['user'], session['user'], fg_name))
             conn.commit()
             cursor.close()
-            return jsonify({'name': fg_name, 'description': description})
+            return jsonify({'fg_name': fg_name, 'owner':session['user'], 'description': description})
         else:
             msg = "Group Already Exist"
-            return redirect(url_for('GroupManagement', error=msg))
-    '''
-        Do Stuff Here
-        1. Connect to DB Check!
-        2. Insert into DB Check!
-        3. Remember to commit and close Check!
-        4. You don't need to handle errors. There are a little bit more you need to know before you do that OK!
-        5. SQL Instruction:
-            5.1 fg_name and owner_email are the composite primary key  Check!
-            5.2 After inserting, plz commit!!!  Check!
-            
-            ?***********************************************************************************************?
-            ?5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end?
-            ?***********************************************************************************************?
-            You right, we need to return group already exist
-    '''
-    # Return statement is for updating UI using AJAX
-    return jsonify({'name':fg_name, 'description':description})
+            return redirect(url_for('GroupManagement',error=msg))
 
 @app.route("/logout")
 def logout():
