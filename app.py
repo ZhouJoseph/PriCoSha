@@ -227,24 +227,37 @@ def createGroup():
             msg = "Group Already Exist"
 
             return redirect(url_for('GroupManagement', error=msg))
-    '''
-        Do Stuff Here
-        1. Connect to DB Check!
-        2. Insert into DB Check!
-        3. Remember to commit and close Check!
-        4. You don't need to handle errors. There are a little bit more you need to know before you do that OK!
-        5. SQL Instruction:
-            5.1 fg_name and owner_email are the composite primary key  Check!
-            5.2 After inserting, plz commit!!!  Check!
-
-            ?***********************************************************************************************?
-            ?5.3 Don't need redirect here, only return the value that needs to be displayed in the front-end?
-            ?***********************************************************************************************?
-            You right, we need to return group already exist
-    '''
     # Return statement is for updating UI using AJAX
     return jsonify({'name':fg_name, 'description':description})
             #return redirect(url_for('GroupManagement',error=msg))
+
+    '''Add friend should be a option following each group description in your groups page
+        clicking on the option will pop up a user search by email address'''
+def addFriend(ownerID, fg_name):
+    cursor = conn.cursor()
+    friendID = request.form("friendEmail")
+    try:
+        sql = "select * from belong where email = (%s) and owner_email = (%s) and fg_name = (%s)"
+        cursor.execute(sql,(friendID, ownerID, fg_name))
+        rep = cursor.fetchone()
+        sql = "select * from person where email = (%s)"
+        cursor.execute(sql, (friendID))
+        validFriend = cursor.fetchone()
+    finally:
+        if (not rep) and validFriend: 
+            '''then insert new belong'''
+            sql = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+            cursor.execute(sql, (friendID, ownerID, fg_name))
+            conn.commit()
+            cursor.close()
+            return """Updata group"""
+        elif (rep):
+            msg = "Friend Already in Group"
+            return '''Error Message'''
+        else:
+            msg = "Invalid Friend Email"
+            return '''Error Message'''
+
 
 @app.route("/logout")
 def logout():
