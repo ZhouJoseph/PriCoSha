@@ -136,10 +136,6 @@ def postContent(email_post,post_time,file_path,item_name,is_pub,groups=[]):
     cursor.close()
     return data
 
-
-
-
-
 # Posting a blog
 @app.route("/post/posting/public",methods=['POST'])
 def postBlog():
@@ -153,15 +149,14 @@ def postBlog():
 
 @app.route("/post/posting/private",methods=['POST'])
 def postPrivateBlog():
-    # content = request.form["content"]
-    groups = request.form["group"]
-    print(groups)
-    # is_pubB = False
-    # file_path = "No File Path Chosen Yet"
-    # ts = time.time()
-    # timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    # data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
-    return "posting private"
+    content = request.form["content"]
+    groups = request.form.getlist("group[]")
+    groups = [True if int(i) == 1 else False for i in groups]
+    is_pubB = False
+    file_path = "No File Path Chosen Yet"
+    ts = time.time()
+    timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
     return jsonify({'data':data})
 
 # Fetching the viewable blogs
@@ -169,14 +164,14 @@ def postPrivateBlog():
 def fetchBlogs():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE email_post = (%s) or is_pub = true ORDER BY post_time DESC'
+        query = 'SELECT * FROM(SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY)UNION all SELECT email_post, post_time, item_name, file_path, item_id FROM belong JOIN share USING(owner_email,fg_name) JOIN contentitem USING(item_id) WHERE email = (%s)) a ORDER BY post_time DESC;'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path, item_id, is_pub FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY post_time DESC'
+        query = 'SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY)'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()

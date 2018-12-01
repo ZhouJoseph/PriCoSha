@@ -146,7 +146,7 @@
         };
         var content = $("#blog").val();
         function addPost(){
-            var content = $("#blog").val();
+            content = $("#blog").val();
             var isPub = false;
             if($("#pubID").prop("checked")){
               isPub = true;
@@ -184,9 +184,9 @@
 
             sharedGroups.forEach(function(element){
                 if(element.checked){
-                    result.push(true);
+                    result.push(1);
                 }else{
-                    result.push(false);
+                    result.push(0);
                 }
             })
             alert(result);
@@ -208,26 +208,7 @@
             })
         }
 
-        //myForm = document.getElementById("myForm");
-        //var arr = [];
         function handleClick(a){
-            //console.log("arr=", arr);
-            //alert("group clicked!!!")
-            //var checkbox = document.getElementsByClassName("form-check-input");
-            //var returnvalue = jQuery("#checkbox").prop("checked");
-            //alert(returnvalue);
-            //if (checkbox.checked == true){
-              //alert(checkbox.checked);
-              //arr.push(a);
-
-            //}
-            //else{
-                //alert(checkbox.checked);
-                //arr.pop(a);
-            //}
-
-
-
 
         }
 
