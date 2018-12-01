@@ -103,7 +103,10 @@
         }
 
     function generateSpan(fg_name,description,owner){
-        var span = '<a href="#" class="list-group-item list-group-item-action disabled">' + fg_name + '; description: ' + description + '; owner: ' + owner + '</a>';
+        var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
+         + description + '; owner: ' + owner + '; Add Friend: ' +
+         '<a href="#friendAdd" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal" style="width:100%">Add friend</a>' +
+         '</span>';
         return span;
     };
 
