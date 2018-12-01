@@ -107,36 +107,61 @@ def signUpUser():
 def post():
     if 'user' in session:
         session['groups']=getGroups(session['user'])
-        return render_template('post.html',email=session['user'])
+        return render_template('post.html',email=session['user'],groups=session['groups'])
     else:
         return render_template('post.html',email="Visitor")
 
-# Posting a blog
-@app.route("/post/posting",methods=['POST'])
-def postBlog():
-    content = request.form["content"]
-    print(request.form)
-    #print(request.form.get('content'))
-    #print(request.form.get('is_pubBox'))
-    #print(request.form.get('pubID'))
-    is_pubB = False
-    if request.form['is_pubBox']=='true':
-        is_pubB = True
-    file_path = "No File Path Chosen Yet"
-    ts = time.time()
-    timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+
+def postContent(email_post,post_time,file_path,item_name,is_pub,groups=[]):
     cursor = conn.cursor()
     query = 'INSERT INTO `contentitem`(`email_post`,`post_time`,`file_path`,`item_name`,`is_pub`) VALUES(%s,%s,%s,%s,%s)'
-    cursor.execute(query,(session['user'],timestamp,file_path,content,is_pubB))
+    cursor.execute(query,(email_post,post_time,file_path,item_name,is_pub))
     conn.commit()
     id = cursor.lastrowid
     query = 'SELECT email_post, post_time, item_name, file_path,item_id FROM contentitem WHERE item_id = (%s)'
     cursor.execute(query,id)
     data = cursor.fetchone()
+    counter = 0
+    sharedGroup = []
+    for shared in groups:
+        if shared == True:
+            sharedGroup.append(session['groups'][counter])
+            counter+=1
+        else:
+            counter+=1
+    for shared in sharedGroup:
+        query = 'INSERT INTO `share`(`owner_email`,`fg_name`,`item_id`) VALUES(%s,%s,%s)'
+        cursor.execute(query,(shared[0],shared[1],id))
+        conn.commit()
+    cursor.close()
+    return data
 
-    #get the information that what groups this user is in
-    #make an array of those groups
-    #return to html file to let user choose
+
+
+
+
+# Posting a blog
+@app.route("/post/posting/public",methods=['POST'])
+def postBlog():
+    content = request.form["content"]
+    is_pubB = True
+    file_path = "No File Path Chosen Yet"
+    ts = time.time()
+    timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    data = postContent(session['user'],timestamp,file_path,content,is_pubB)
+    return jsonify({'data':data})
+
+@app.route("/post/posting/private",methods=['POST'])
+def postPrivateBlog():
+    # content = request.form["content"]
+    groups = request.form["group"]
+    print(groups)
+    # is_pubB = False
+    # file_path = "No File Path Chosen Yet"
+    # ts = time.time()
+    # timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    # data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
+    return "posting private"
     return jsonify({'data':data})
 
 # Fetching the viewable blogs
