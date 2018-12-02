@@ -253,6 +253,7 @@ def createGroup():
 
     '''Add friend should be a option following each group description in your groups page
         clicking on the option will pop up a user search by email address'''
+@app.route("/groups/friendAdd", method=['get','post'])
 def addFriend(ownerID, fg_name):
     cursor = conn.cursor()
     friendID = request.form("friendEmail")
