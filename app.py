@@ -198,14 +198,13 @@ def detailedBlog(item_id):
     rating = cursor.fetchall()
     cursor.close()
 
-    return jsonify({'content':content,'tag':taggee,'rate':rating})
+    return render_template('content.html',item=content,tag=taggee,rate=rating)
 
 
 @app.route("/groups")
 def GroupManagement():
     if 'user' in session:
         error = request.args.get('error')
-
         return render_template('GroupManagement.html',errors = error)
     else:
         msg = "You need to log in first"
@@ -245,7 +244,6 @@ def createGroup():
             return jsonify({'fg_name': fg_name, 'owner':session['user'], 'description': description})
         else:
             msg = "Group Already Exist"
-
             return redirect(url_for('GroupManagement', error=msg))
     # Return statement is for updating UI using AJAX
     return jsonify({'name':fg_name, 'description':description})
@@ -256,7 +254,7 @@ def createGroup():
 @app.route("/groups/friendAdd", methods=['get','post'])
 def addFriend(ownerID, fg_name):
     cursor = conn.cursor()
-    friendID = request.form("friendEmail")
+    friendID = request.form["friendEmail"]
     try:
         sql = "select * from belong where email = (%s) and owner_email = (%s) and fg_name = (%s)"
         cursor.execute(sql,(friendID, ownerID, fg_name))
