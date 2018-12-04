@@ -61,8 +61,10 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             </div>
                             <div class="modal-body">
+                                <form id="upload-file" enctype="multipart/form-data">
+                                    <input type="file" class="filestyle" name="image" data-buttonBefore="true" id="file" />
+                                </form>
                                 <form id="myForm" autocomplete="off">
-                                    <input type="file" class="filestyle" data-buttonBefore="true" id="file" />
                                     <input style="margin-top:2px;" class="form-control" type="text" id="blog" name="content" placeholder="Plz name your post" required/>
                                     <p>Do you want it to be public or not?</p>
                                     <div class="form-check">
@@ -146,21 +148,29 @@
         };
         
         var content = $("#blog").val();
+        var form_data = 1;
         function addPost(){
             content = $("#blog").val();
             var isPub = false;
             if($("#pubID").prop("checked")){
               isPub = true;
             }
+            form_data = new FormData();
+            form_data.append('file',$("#upload-file input[type='file']")[0].files[0]);
+
+            var other_data = $('#myForm').serializeArray();
+            $.each(other_data,function(key,input){
+                form_data.append(input.name,input.value);
+            });
 
             if(isPub){
                 $.ajax({
                     type:"POST",
-                    data:{
-                        "content": content,
-                        "is_pubBox": isPub
-                    },
+                    data:form_data,
                     url: "/post/posting/public",
+                    cache:false,
+                    processData:false,
+                    contentType:false,
                     success: function(posts){
                         $("#myModal").modal('hide');
                         // 0: email; 1: timeStamp; 2: content name; 3:file_path; 4:item_id 5:is_pubBool;
@@ -189,15 +199,21 @@
                 }else{
                     result.push(0);
                 }
-            })
+            });
+
+            var other_data = $('#groupForm').serializeArray();
+            $.each(other_data,function(key,input){
+                form_data.append(input.name,input.value);
+            });
+            form_data.append("group",result);
             alert(result);
             $.ajax({
                 type:"POST",
-                data:{
-                    "group": result,
-                    "content": content,
-                },
+                data:form_data,
                 url:"/post/posting/private",
+                cache:false,
+                processData:false,
+                contentType:false,
                 success:function(posts){
                     $("#groupModal").modal('hide');
                     var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4],posts.data[5]);
