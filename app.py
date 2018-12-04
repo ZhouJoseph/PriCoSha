@@ -253,7 +253,7 @@ def createGroup():
 
     '''Add friend should be a option following each group description in your groups page
         clicking on the option will pop up a user search by email address'''
-@app.route("/groups/friendAdd", method=['get','post'])
+@app.route("/groups/friendAdd", methods=['get','post'])
 def addFriend(ownerID, fg_name):
     cursor = conn.cursor()
     friendID = request.form("friendEmail")
@@ -265,7 +265,7 @@ def addFriend(ownerID, fg_name):
         cursor.execute(sql, (friendID))
         validFriend = cursor.fetchone()
     finally:
-        if (not rep) and validFriend: 
+        if (not rep) and validFriend:
             '''then insert new belong'''
             sql = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
             cursor.execute(sql, (friendID, ownerID, fg_name))
