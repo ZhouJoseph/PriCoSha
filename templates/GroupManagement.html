@@ -64,7 +64,6 @@
     <ul class="list-group" style="width:50%;min-width: 300px" id="groups"></ul>
     </center>
 
-    '''add friend to group, use email input'''
     <div id="friendAdd", class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -117,7 +116,7 @@
                     if(info.fg_name && info.owner){
                         updateGroupUI(info.fg_name,info.description,info.owner);
                     }else{
-                        alert('You cannot own two groups with the same name')
+                        alert('You cannot own two groups with the same name');
                     }
                 },
                 error: function(err){
@@ -133,9 +132,6 @@
             '</span>';
             return span;
         };
-
-
-
 
 
 
