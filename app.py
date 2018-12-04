@@ -6,7 +6,7 @@ import time
 import datetime
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/img'
+UPLOAD_FOLDER = os.getcwd()+'/static/img/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
@@ -25,9 +25,9 @@ def allowed_file(filename):
 
 def saveFile(file):
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        filename = secure_filename(session['user']+file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return (app.config['UPLOAD_FOLDER']+filename)
+        return os.path.join("img", filename)
 
 def getGroups(email):
     cursor = conn.cursor()
@@ -139,9 +139,10 @@ def postContent(email_post,post_time,file_path,item_name,is_pub,groups=[]):
 # Posting a blog
 @app.route("/post/posting/public",methods=['POST'])
 def postBlog():
+    upload_file = request.files['file']
     content = request.form["content"]
     is_pubB = True
-    file_path = "No File Path Chosen Yet"
+    file_path = saveFile(upload_file)
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     data = postContent(session['user'],timestamp,file_path,content,is_pubB)
@@ -149,11 +150,15 @@ def postBlog():
 
 @app.route("/post/posting/private",methods=['POST'])
 def postPrivateBlog():
+    upload_file = request.files['file']
     content = request.form["content"]
-    groups = request.form.getlist("group[]")
+    # groups = request.form.getlist("group[]")
+    groups = request.form["group"]
+    groups = groups.split(",")
+    print(groups)
     groups = [True if int(i) == 1 else False for i in groups]
     is_pubB = False
-    file_path = "No File Path Chosen Yet"
+    file_path = saveFile(upload_file)
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
@@ -164,14 +169,14 @@ def postPrivateBlog():
 def fetchBlogs():
     if 'user' in session:
         cursor = conn.cursor()
-        query = 'SELECT * FROM(SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY)UNION all SELECT email_post, post_time, item_name, file_path, item_id FROM belong JOIN share USING(owner_email,fg_name) JOIN contentitem USING(item_id) WHERE email = (%s)) a ORDER BY post_time DESC;'
+        query = 'SELECT DISTINCT * FROM(SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) UNION all SELECT email_post, post_time, item_name, file_path, item_id FROM belong JOIN share USING(owner_email,fg_name) JOIN contentitem USING(item_id) WHERE email = (%s)) a ORDER BY post_time DESC;'
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
     else:
         cursor = conn.cursor()
-        query = 'SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY)'
+        query = 'SELECT email_post, post_time, item_name, file_path, item_id FROM contentitem WHERE is_pub = true AND post_time>=DATE_SUB(NOW(), INTERVAL 1 DAY) order by post_time DESC'
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()
@@ -198,7 +203,7 @@ def detailedBlog(item_id):
     rating = cursor.fetchall()
     cursor.close()
 
-    return render_template('content.html',item=content,tag=taggee,rate=rating)
+    return render_template('content.html',item=content,tag=taggee,rate=rating,file="/static/"+content[3])
 
 
 @app.route("/groups")
@@ -264,7 +269,7 @@ def addFriend(ownerID, fg_name):
         cursor.execute(sql, (friendID))
         validFriend = cursor.fetchone()
     finally:
-        if (not rep) and validFriend: 
+        if (not rep) and validFriend:
             '''then insert new belong'''
             sql = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
             cursor.execute(sql, (friendID, ownerID, fg_name))
