@@ -20,5 +20,5 @@
 - Defriend
 - Tagging a group
 # Additional Feature
-- Create Group
-- Sign up
+- <Del>Create Group</Del>
+- <Del>Sign up</Del>
