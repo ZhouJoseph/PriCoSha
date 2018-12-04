@@ -218,7 +218,7 @@ def groupFetch():
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         cursor.close()
-        return jsonify({'data':data})
+        return jsonify({'data':data,'user':session['user']})
     else:
         msg = "You need to log in first"
         return redirect(url_for('login',error=msg))

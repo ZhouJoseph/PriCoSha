@@ -87,11 +87,6 @@
         </div>
     </div>
 
-    <!-- If you groups/fetch, you can get rid of this,
-    and do all the stuff in ajax call(in a function!)
-    That's more doable because after we create a group
-    We still need to update the UI.
-    However, doing the following cannot allow us to instant update -->
 
 <!-- #Create FG, Give it a Unique name, Might add description
 #Might add User to FG, no duplication allowed -->
@@ -125,11 +120,17 @@
             });
         }
 
-        function generateSpan(fg_name,description,owner){
-            var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
-            + description + '; owner: ' + owner +
-            '<a href="#friendAdd" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal">Add/De friend</a>' +
-            '</span>';
+        function generateSpan(fg_name,description,owner,user){
+            if(owner == user) {
+                var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
+                    + description + '; owner: ' + owner + '; user: ' + user +
+                    '<a href="#friendAdd" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal">Add/De friend</a>' +
+                    '</span>'
+            }
+            else {
+                var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
+                    + description + '; owner: ' + owner + '</span>';
+            }
             return span;
         };
 
@@ -139,9 +140,9 @@
         type: "GET",
         url: "/groups/fetch",
         success: function(groups){
-            if(groups.data){
+            if(groups.data && groups.user){
                 for(var i = 0; i < groups.data.length; i++){
-                    updateGroupUI(groups.data[i][0],groups.data[i][1],groups.data[i][2]);
+                    updateGroupUI(groups.data[i][0],groups.data[i][1],groups.data[i][2], groups.user);
                 }
             }
         },
@@ -149,8 +150,8 @@
             alert("err");
         }
     });
-    function updateGroupUI(fg_name,description, owner){
-        var span = generateSpan(fg_name,description,owner);
+    function updateGroupUI(fg_name,description, owner, user){
+        var span = generateSpan(fg_name,description,owner, user);
         $("#groups").append(span);
     }
     function hideAlert(){
