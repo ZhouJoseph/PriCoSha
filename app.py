@@ -139,14 +139,19 @@ def postContent(email_post,post_time,file_path,item_name,is_pub,groups=[]):
 # Posting a blog
 @app.route("/post/posting/public",methods=['POST'])
 def postBlog():
-    upload_file = request.files['file']
-    content = request.form["content"]
     is_pubB = True
-    file_path = saveFile(upload_file)
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    data = postContent(session['user'],timestamp,file_path,content,is_pubB)
-    return jsonify({'data':data})
+    try:
+        upload_file = request.files['file']
+        content = request.form["content"]
+        file_path = saveFile(upload_file)
+        data = postContent(session['user'],timestamp,file_path,content,is_pubB)
+        return jsonify({'data':data})
+    except:
+        content = request.form["content"]
+        data = postContent(session['user'], timestamp, 'none', content, is_pubB)
+        return jsonify({'data':data})
 
 @app.route("/post/posting/private",methods=['POST'])
 def postPrivateBlog():
@@ -186,7 +191,7 @@ def fetchBlogs():
 @app.route("/post/blog/<item_id>")
 def detailedBlog(item_id):
     cursor = conn.cursor()
-    
+
     # we need to check if the current user have access to this page or not.
 
     # content of a post
