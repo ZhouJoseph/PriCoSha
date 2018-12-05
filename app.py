@@ -157,7 +157,6 @@ def postBlog():
 def postPrivateBlog():
     upload_file = request.files['file']
     content = request.form["content"]
-    # groups = request.form.getlist("group[]")
     groups = request.form["group"]
     groups = groups.split(",")
     print(groups)
