@@ -27,7 +27,7 @@ def saveFile(file):
     if file and allowed_file(file.filename):
         filename = secure_filename(session['user']+file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return os.path.join("img", filename)
+        return os.path.join("/static/img", filename)
 
 def getGroups(email):
     cursor = conn.cursor()
@@ -210,7 +210,7 @@ def detailedBlog(item_id):
     rating = cursor.fetchall()
     cursor.close()
 
-    return render_template('content.html',item=content,tag=taggee,rate=rating,file="/static/"+content[3])
+    return render_template('content.html',item=content,tag=taggee,rate=rating,file=content[3])
 
 
 @app.route("/groups")
