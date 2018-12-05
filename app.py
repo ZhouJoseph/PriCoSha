@@ -260,62 +260,24 @@ def createGroup():
 @app.route("/groups/friendAdd", methods=['get','post'])
 def addFriend(ownerID, fg_name):
     cursor = conn.cursor()
-    fName = request.form["fName"]
-    lName = request.form["lName"]
-
+    friendID = request.form["friendEmail"]
     try:
-        sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlCount, (fName,lName))
-        count = cursor.fetchone()
-        sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlEmail, (fName, lName))
-        friendID = cursor.fetchone()
-        sqlAlreadyIn = "select * from belong join person on (email) where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"ownerEmail", 'fg_name'))
-        alreadyIn = cursor.fetchone()
-
+        sql = "select * from belong where email = (%s) and owner_email = (%s) and fg_name = (%s)"
+        cursor.execute(sql,(friendID, ownerID, fg_name))
+        rep = cursor.fetchone()
+        sql = "select * from person where email = (%s)"
+        cursor.execute(sql, (friendID))
+        validFriend = cursor.fetchone()
     finally:
-        if (count and count[0] > 1):
-            '''duplicated name, further request of email address'''
-        elif (not alreadyIn) and friendID:
-            sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-            cursor.execute(sqlInsert, (friendID, ownerID, fg_name))
+        if (not rep) and validFriend:
+            '''then insert new belong'''
+            sql = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+            cursor.execute(sql, (friendID, ownerID, fg_name))
             conn.commit()
             cursor.close()
             return """Updata group"""
-        elif (alreadyIn):
+        elif (rep):
             msg = "Friend Already in Group"
-            return '''Error Message'''
-        else:
-            msg = "Invalid Friend Email"
-            return '''Error Message'''
-
-def deFriend(ownerID, fg_name):
-    cursor = conn.cursor()
-    fName = request.form["fName"]
-    lName = request.form["lName"]
-    try:
-        sqlCount = "select count(distinct email) from person join belong on (email) where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlCount, (fName,lName))
-        count = cursor.fetchone()
-        sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlEmail, (fName, lName))
-        friendID = cursor.fetchone()
-        sqlAlreadyIn = "select * from belong join person on (email) where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"ownerEmail", 'fg_name'))
-        alreadyIn = cursor.fetchone()
-
-    finally:
-        if (count and count[0] > 1):
-            '''duplicated name, further request of email address'''
-        elif (alreadyIn) and friendID:
-            sqldelete = "delete from belong where email=(%s) and owner_email=(%s) and fg_name=(%s)"
-            cursor.execute(sqlDelete, (friendID, ownerID, fg_name))
-            conn.commit()
-            cursor.close()
-            return """Updata group"""
-        elif (not alreadyIn):
-            msg = "Person not in Group"
             return '''Error Message'''
         else:
             msg = "Invalid Friend Email"
