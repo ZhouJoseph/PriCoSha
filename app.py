@@ -155,18 +155,23 @@ def postBlog():
 
 @app.route("/post/posting/private",methods=['POST'])
 def postPrivateBlog():
-    upload_file = request.files['file']
     content = request.form["content"]
+    is_pubB = False
     groups = request.form["group"]
     groups = groups.split(",")
     print(groups)
     groups = [True if int(i) == 1 else False for i in groups]
-    is_pubB = False
-    file_path = saveFile(upload_file)
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
-    return jsonify({'data':data})
+    try:
+        upload_file = request.files['file']
+        file_path = saveFile(upload_file)
+        data = postContent(session['user'],timestamp,file_path,content,is_pubB,groups)
+        return jsonify({'data':data})
+    except:
+        data = postContent(session['user'],timestamp,'none',content,is_pubB,groups)
+        return jsonify({'data':data})
+
 
 # Fetching the viewable blogs
 @app.route("/post/blog")
