@@ -267,12 +267,11 @@ def createGroup():
     '''Add friend should be a option following each group description in your groups page
         clicking on the option will pop up a user search by email address'''
 
-@app.route("/groups/friendAdd", methods=['get','post'])
-def addFriend(ownerID, fg_name):
+@app.route("/groups/friendAdd", methods=['post'])
+def addFriend():
     cursor = conn.cursor()
-    fName = request.form["fName"]
-    lName = request.form["lName"]
-    text = document.getElementById('')
+    fName = request.form["firstName"]
+    lName = request.form["lastName"]
 
     try:
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
@@ -281,19 +280,20 @@ def addFriend(ownerID, fg_name):
         sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlEmail, (fName, lName))
         friendID = cursor.fetchone()
-        sqlAlreadyIn = "select * from belong join person on (email) where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"ownerEmail", 'fg_name'))
+        sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
+        cursor.execute(sqlAlreadyIn,(fName,lName,"md3837@nyu.edu", 'PrivateGroup'))
         alreadyIn = cursor.fetchone()
 
     finally:
         if (count and count[0] > 1):
-            '''duplicated name, further request of email address'''
+            msg = '''duplicated name, further request of email address'''
+            return '''Error Message'''
         elif (not alreadyIn) and friendID:
             sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-            cursor.execute(sqlInsert, (friendID, ownerID, fg_name))
+            cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
             conn.commit()
             cursor.close()
-            return """Updata group"""
+            return """Update group"""
         elif (alreadyIn):
             msg = "Friend Already in Group"
             return '''Error Message'''
