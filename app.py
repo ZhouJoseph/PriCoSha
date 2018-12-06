@@ -213,7 +213,6 @@ def detailedBlog(item_id):
     cursor.execute(rate,item_id)
     rating = cursor.fetchall()
     cursor.close()
-
     return render_template('content.html',item=content,tag=taggee,rate=rating,file=content[3])
 
 
@@ -333,6 +332,26 @@ def deFriend():
             msg = "Invalid Friend Email"
             return '''Error Message'''
 
+@app.route("/post/blog/<item_id>/comment",methods=['GET','POST'])
+def comment(item_id):
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        content = request.form['comment']
+        query = "INSERT into `comment`(`email`, `comment`, `item_id`) Values (%s,%s,%s)"
+        cursor.execute(query,(session['user'],content,item_id))
+        conn.commit()
+        query = "SELECT fname, lname FROM Person where email=(%s)"
+        cursor.execute(query,(session['user']))
+        name = cursor.fetchone()
+        cursor.close()
+        return jsonify({'name':name,'comment':content})
+    elif request.method == 'GET':
+        print("hahah")
+        query = "SELECT DISTINCT fname,lname,comment,email FROM comment JOIN person USING(email) where item_id=(%s)"
+        cursor.execute(query,(item_id))
+        data = cursor.fetchall()
+        cursor.close()
+        return jsonify({'data':data})
 
 @app.route("/logout")
 def logout():

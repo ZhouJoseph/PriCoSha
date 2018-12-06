@@ -49,23 +49,31 @@
 <center>
     {{ item[4] }}
     <br>
+
+    {% if file!='none' %}
     <img src={{file}} style="display: block;max-width: 500px;max-height: 500px;width: auto;height: auto" alt="userFile">
+    {% endif %}
     <br>
     posted by {{ item[1] }}
-    
+
     {% if tag %}
-        tags: 
+        tags:
             {% for t in tag %}
             {% endfor %}
     {% endif %}
     {% if rate %}
-        rates: 
+        rates:
             {% for r in rate %}
             {% endfor %}
     {% endif %}
     <br>
-    <button id="comment">comment</button>
-    <div id="commentArea"></div>
+    {% if 'user' in session %}
+        <button id="comment">comment</button>
+        <div id="commentArea"></div>
+    {% endif %}
+    {% if 'user' not in session %}
+        you must <a href="{{url_for('login')}}">log in</a> to post a comment
+    {% endif %}
     <div id="userComments"></div>
 
     <div class="list-group" style="width:50%;min-width: 400px" id="posts"></div>
@@ -73,23 +81,49 @@
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script>
+        
+
         $("#comment").on('click',function(){
             var input = "<button onclick='cancel()'>cancel</button><input name='comment'></input><button onclick='post()'>post</button>"
             $("#commentArea").append(input);
             $("#comment").css("display","none");
         });
-        function commentSpan(comment){
-            var p = "<p>"+comment+"</p>";
-            $("#userComments").append(p);
-        }
+
+        function commentSpan(fname,lname,comment){
+            var span = "<span>"+lname+","+fname+" : "+comment+"</span>";
+            $("#userComments").append(span);
+        };
+
         function cancel(){
             $("#commentArea").empty();
             $("#comment").css("display","block");
         };
 
+        $.ajax({
+            type: "GET",
+            url:window.location.pathname + "/comment",
+            success:function(info){
+                for (var i = 0; i < info.data.length; i++) {
+                    var comment = info.data[i];
+                    commentSpan(comment[0],comment[1],comment[2]);
+                }
+            },
+            error:function(err){alert('sth went wrong');},
+        })
+
         function post(){
             var comment = $("input").val();
-            commentSpan(comment);
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + "/comment",
+                data: {'comment':comment,},
+                success: function(info){
+                    commentSpan(info.name[0],info.name[1],info.comment);
+                },
+                error: function(err){
+                    alert("You can only comment once. Sorry");
+                },
+            });
             cancel();
         };
 
