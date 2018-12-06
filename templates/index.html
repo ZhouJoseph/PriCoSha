@@ -77,18 +77,20 @@
       <p class="header">Here are your tags:</p>
       <ul>
         {% for row in tag_data %}
+        <div id="received-tags">
           <a href="" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{row[9]}}</h5>
               <p><small>{{row[7]}}</small></p>
               <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
-                <button type="button" class="btn btn-secondary">Accept</button>
-                <button type="button" class="btn btn-secondary">Deny</button>
+                <button type="button" class="btn btn-secondary" onclick="accept_tag()">Accept</button>
+                <button type="button" class="btn btn-secondary" onclick="reject_tag()">Deny</button>
               </div>
             </div>
             <p class="mb-1">{{row[1]}} tags you</p>
 
           </a>
+        </div>
         {% endfor %}
     </ul>
 
@@ -100,7 +102,35 @@
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <script>
+      function accept_tag(){
+        alert('accept');
+        var x = document.getElementById("received-tags");
+        x.style.display = "none";
 
+      }
+
+      function reject_tag(){
+        alert('reject');
+        var x = document.getElementById("received-tags");
+        x.style.display = "none";
+      }
+
+      function update(){
+        $.ajax({
+            type:"POST",
+            data:form_data,
+            url: "/tag",
+            cache:false,
+            processData:false,
+            contentType:false,
+            success: function(tags){
+
+            },
+            error: function(err){
+                alert("umm");
+            }
+        })
+      }
     </script>
 
   </body>

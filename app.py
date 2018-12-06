@@ -41,13 +41,18 @@ def getGroups(email):
 def index():
     if 'user' in session:
         cursor = conn.cursor()
-        query = "SELECT * FROM tag join contentitem ON (contentitem.item_id = tag.item_id) where email_tagged = (%s)"
+        query = "SELECT * FROM tag join contentitem ON (contentitem.item_id = tag.item_id) where email_tagged = (%s) and status = 'Pending'"
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
         print(data)
         return render_template("index.html", tag_data = data)
     else:
         return render_template("index.html")
+
+@app.route("/tag", methods = ["POST"])
+def tag():
+    pass
+
 
 @app.route("/login")
 def login():
