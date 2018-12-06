@@ -77,10 +77,10 @@
                         <div class="modal-body">
                             <input style="margin-top:2px;" class="form-control" type="text" id="fName" name="firstName" placeholder="FistName" required/>
                             <input style="margin-top:2px;" class="form-control" type="text" id="lName" name="lastName" placeholder="LastName" required/>
-                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="addFriend()">Add</button>
-                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="deFriend()">Delete</button>
                         </div>
                     </form>
+                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="addFriend()">Add</button>
+                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="deFriend()">Delete</button>
                 </div>
             </div>
         </div>
@@ -134,8 +134,8 @@
         };
 
         function addFriend(){
-            var fname = $("#fName".val());
-            var lname = $('#lName'.val());
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
             $.ajax({
                 type: "POST",
                 url: "/groups/friendAdd",
@@ -144,7 +144,10 @@
                     "lastName": lname,
                 },
                 success: function(info){
-                    alert("Great!");
+                    if(info.noUser){
+                        alert(info.noUser);
+                    }
+                    
                 },
                 error: function(err){
                     alert("Error")

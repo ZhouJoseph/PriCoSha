@@ -285,29 +285,42 @@ def addFriend():
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlCount, (fName,lName))
         count = cursor.fetchone()
+        count = count[0] # reformat count
         sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlEmail, (fName, lName))
         friendID = cursor.fetchone()
+
+        # 1. count == 0
+        # 2. count == 1
+            # 2.1 IN
+            # 2.2 NOT IN
+        # 3. COUNT > 1
+            # RETURN NAME + EMAIL, NOT IN
+    finally:
+        if count == 0:
+            msg = "there is no such a user with name " + fName + " " + lName
+            return jsonify({"noUser":msg})
         sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
         cursor.execute(sqlAlreadyIn,(fName,lName,"md3837@nyu.edu", 'PrivateGroup'))
-        alreadyIn = cursor.fetchone()
-
-    finally:
-        if (count and count[0] > 1):
-            msg = '''duplicated name, further request of email address'''
-            return '''Error Message'''
-        elif (not alreadyIn) and friendID:
-            sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-            cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
-            conn.commit()
-            cursor.close()
-            return """Update group"""
-        elif (alreadyIn):
-            msg = "Friend Already in Group"
-            return '''Error Message'''
-        else:
-            msg = "Invalid Friend Email"
-            return '''Error Message'''
+        alreadyIn = cursor.fetchall()
+        if count == 1:
+            return "hhahahah"
+        return "hah"
+        # if (count and count[0] > 1):
+        #     msg = '''duplicated name, further request of email address'''
+        #     return '''Error Message'''
+        # elif (not alreadyIn) and friendID:
+        #     sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+        #     cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
+        #     conn.commit()
+        #     cursor.close()
+        #     return """Update group"""
+        # elif (alreadyIn):
+        #     msg = "Friend Already in Group"
+        #     return '''Error Message'''
+        # else:
+        #     msg = "Invalid Friend Email"
+        #     return '''Error Message'''
 
 @app.route("/groups/defriend", methods=['post'])
 def deFriend():
