@@ -262,6 +262,7 @@ def addFriend(ownerID, fg_name):
     cursor = conn.cursor()
     fName = request.form["fName"]
     lName = request.form["lName"]
+    text = document.getElementById('')
 
     try:
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
