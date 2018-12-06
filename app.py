@@ -27,7 +27,7 @@ def saveFile(file):
     if file and allowed_file(file.filename):
         filename = secure_filename(session['user']+file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return os.path.join("img", filename)
+        return os.path.join("/static/img", filename)
 
 def getGroups(email):
     cursor = conn.cursor()
@@ -139,20 +139,24 @@ def postContent(email_post,post_time,file_path,item_name,is_pub,groups=[]):
 # Posting a blog
 @app.route("/post/posting/public",methods=['POST'])
 def postBlog():
-    upload_file = request.files['file']
-    content = request.form["content"]
     is_pubB = True
-    file_path = saveFile(upload_file)
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    data = postContent(session['user'],timestamp,file_path,content,is_pubB)
-    return jsonify({'data':data})
+    try:
+        upload_file = request.files['file']
+        content = request.form["content"]
+        file_path = saveFile(upload_file)
+        data = postContent(session['user'],timestamp,file_path,content,is_pubB)
+        return jsonify({'data':data})
+    except:
+        content = request.form["content"]
+        data = postContent(session['user'], timestamp, 'none', content, is_pubB)
+        return jsonify({'data':data})
 
 @app.route("/post/posting/private",methods=['POST'])
 def postPrivateBlog():
     upload_file = request.files['file']
     content = request.form["content"]
-    # groups = request.form.getlist("group[]")
     groups = request.form["group"]
     groups = groups.split(",")
     print(groups)
@@ -187,6 +191,8 @@ def fetchBlogs():
 def detailedBlog(item_id):
     cursor = conn.cursor()
 
+    # we need to check if the current user have access to this page or not.
+
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)
@@ -203,7 +209,7 @@ def detailedBlog(item_id):
     rating = cursor.fetchall()
     cursor.close()
 
-    return render_template('content.html',item=content,tag=taggee,rate=rating,file="/static/"+content[3])
+    return render_template('content.html',item=content,tag=taggee,rate=rating,file=content[3])
 
 
 @app.route("/groups")
