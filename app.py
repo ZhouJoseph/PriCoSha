@@ -213,7 +213,6 @@ def detailedBlog(item_id):
     cursor.execute(rate,item_id)
     rating = cursor.fetchall()
     cursor.close()
-
     return render_template('content.html',item=content,tag=taggee,rate=rating,file=content[3])
 
 
