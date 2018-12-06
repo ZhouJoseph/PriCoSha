@@ -72,17 +72,13 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
-                    <form id="groupForm" autocomplete="off" action = "/groups/friendAdd" method="Post">
+                    <form id="groupForm" autocomplete="off">
                         <p>Who do you want to add/delete for group:</p>
                         <div class="modal-body">
-                            <form id="myForm" autocomplete="off">
-                                <input style="margin-top:2px;" class="form-control" type="text" id="fName" name="firstName" placeholder="FistName" required/>
-                                <input style="margin-top:2px;" class="form-control" type="text" id="lName" name="lastName" placeholder="LastName" required/>
-                            </form>
-                            <div class="modal-body">
-                                <button class="btn btn-outline-dark mb-2" type="submit" style="width:50%" onclick="addFriend()">Add</button>
-                                <button class="btn btn-outline-dark mb-2" type="submit" style="width:50%" onclick="deFriend()">Delete</button>
-                            </div>
+                            <input style="margin-top:2px;" class="form-control" type="text" id="fName" name="firstName" placeholder="FistName" required/>
+                            <input style="margin-top:2px;" class="form-control" type="text" id="lName" name="lastName" placeholder="LastName" required/>
+                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="addFriend()">Add</button>
+                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="deFriend()">Delete</button>
                         </div>
                     </form>
                 </div>
@@ -137,28 +133,47 @@
             return span;
         };
 
-    $.ajax({
-        type: "GET",
-        url: "/groups/fetch",
-        success: function(groups){
-            if(groups.data && groups.user){
-                for(var i = 0; i < groups.data.length; i++){
-                    updateGroupUI(groups.data[i][0],groups.data[i][1],groups.data[i][2], groups.user);
+        function addFriend(){
+            var fname = $("#fName".val());
+            var lname = $('#lName'.val());
+            $.ajax({
+                type: "POST",
+                url: "/groups/friendAdd",
+                data:{
+                    "firstName": fname,
+                    "lastName": lname,
+                },
+                success: function(info){
+                    alert("Great!");
+                },
+                error: function(err){
+                    alert("Error")
                 }
+            })
+        };
+
+        $.ajax({
+            type: "GET",
+            url: "/groups/fetch",
+            success: function(groups){
+                if(groups.data && groups.user){
+                    for(var i = 0; i < groups.data.length; i++){
+                        updateGroupUI(groups.data[i][0],groups.data[i][1],groups.data[i][2], groups.user);
+                    }
+                }
+            },
+            error: function(err){
+                alert("err");
             }
-        },
-        error: function(err){
-            alert("err");
+        });
+        function updateGroupUI(fg_name,description, owner, user){
+            var span = generateSpan(fg_name,description,owner, user);
+            $("#groups").append(span);
         }
-    });
-    function updateGroupUI(fg_name,description, owner, user){
-        var span = generateSpan(fg_name,description,owner, user);
-        $("#groups").append(span);
-    }
-    function hideAlert(){
-        $(".alert").hide();
-    }
-</script>
+        function hideAlert(){
+            $(".alert").hide();
+        }
+    </script>
 
 </body>
 

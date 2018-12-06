@@ -268,12 +268,11 @@ def createGroup():
     '''Add friend should be a option following each group description in your groups page
         clicking on the option will pop up a user search by email address'''
 
-@app.route("/groups/friendAdd", methods=['post'])
+@app.route("/groups/friendAdd", methods=['POST'])
 def addFriend():
     cursor = conn.cursor()
-    fName = request.form["firstName"]
-    lName = request.form["lastName"]
-
+    fName = request.form['firstName']
+    lName = request.form['lastName']
     try:
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlCount, (fName,lName))
@@ -302,10 +301,11 @@ def addFriend():
             msg = "Invalid Friend Email"
             return '''Error Message'''
 
-def deFriend(ownerID, fg_name):
+@app.route("/groups/defriend", methods=['post'])
+def deFriend():
     cursor = conn.cursor()
-    fName = request.form["fName"]
-    lName = request.form["lName"]
+    fName = request.form["firstName"]
+    lName = request.form["lastName"]
     try:
         sqlCount = "select count(distinct email) from person join belong on (email) where fname = (%s) and lname = (%s)"
         cursor.execute(sqlCount, (fName,lName))
