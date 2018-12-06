@@ -300,9 +300,11 @@ def addFriend():
         if count == 0:
             msg = "there is no such a user with name " + fName + " " + lName
             return jsonify({"noUser":msg})
+        
         sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
         cursor.execute(sqlAlreadyIn,(fName,lName,"md3837@nyu.edu", 'PrivateGroup'))
         alreadyIn = cursor.fetchall()
+        
         if count == 1:
             return "hhahahah"
         return "hah"
