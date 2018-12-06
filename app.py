@@ -353,6 +353,25 @@ def comment(item_id):
         cursor.close()
         return jsonify({'data':data})
 
+@app.route("/post/blog/<item_id>/tag",methods=['GET','POST'])
+def tag(item_id):
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        content = request.form['tag']
+        taggee = []
+        l = []
+        for i in range(len(content)):
+            if content[i] == '@' and i != 0:
+                taggee.append(str(''.join(l)).strip())
+                l = []
+            elif content[i] == '@' and i == 0:continue
+            else:l.append(content[i])
+        taggee.append(str(''.join(l)).strip())
+
+        return 'hah'
+        
+
+
 @app.route("/logout")
 def logout():
     session.clear()
