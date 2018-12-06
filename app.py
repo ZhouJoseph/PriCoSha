@@ -37,9 +37,17 @@ def getGroups(email):
     cursor.close()
     return groups
 
-@app.route("/")
+@app.route("/", methods = ["GET", "POST"])
 def index():
-    return render_template("index.html")
+    if 'user' in session:
+        cursor = conn.cursor()
+        query = "SELECT * FROM tag join contentitem ON (contentitem.item_id = tag.item_id) where email_tagged = (%s)"
+        cursor.execute(query,session['user'])
+        data = cursor.fetchall()
+        print(data)
+        return render_template("index.html", tag_data = data)
+    else:
+        return render_template("index.html")
 
 @app.route("/login")
 def login():

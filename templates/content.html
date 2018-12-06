@@ -75,13 +75,12 @@
         you must <a href="{{url_for('login')}}">log in</a> to post a comment
     {% endif %}
     <div id="userComments"></div>
-
     <div class="list-group" style="width:50%;min-width: 400px" id="posts"></div>
 </center>
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script>
-        
+
 
         $("#comment").on('click',function(){
             var input = "<button onclick='cancel()'>cancel</button><input name='comment'></input><button onclick='post()'>post</button>"
