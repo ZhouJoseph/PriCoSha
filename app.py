@@ -435,6 +435,8 @@ def posttag(item_id):
         content = request.form['tag']
         taggee = []
         l = []
+        ts = time.time()
+        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
         for i in range(len(content)):
             if content[i] == '@' and i != 0:
                 taggee.append(str(''.join(l)).strip())
@@ -442,8 +444,23 @@ def posttag(item_id):
             elif content[i] == '@' and i == 0:continue
             else:l.append(content[i])
         taggee.append(str(''.join(l)).strip())
-        #print(taggee);
-        return 'hah'
+        print(taggee)
+        sql1 = "SELECT `email` FROM person WHERE `fname` = (%s) AND `lname` = (%s)"      #find taggee's email
+        sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
+        for i in taggee:
+            print('user: '+ session['user'])
+            space_index = taggee[0].find(' ')
+            print(taggee[0][0 : space_index], taggee[0][space_index+1 : ])
+            cursor.execute(sql1, (taggee[0][0 : space_index], taggee[0][space_index+1 : ]))
+            taggees_email = cursor.fetchall()
+            print(taggees_email)
+            for j in taggees_email:
+                if j == session['user']:
+                    cursor.execute(sql2, (j, session['user'], item_id, 1, timestamp))
+                else:
+                    cursor.execute(sql2, (j, session['user'], item_id, 'Pending', timestamp))
+        cursor.close()
+        return "Tagged!"
 
 @app.route("/gallery")
 def renderGallery():
