@@ -311,7 +311,7 @@ def addFriend():
             msg = "there is no such a user with name " + fName + " " + lName
             cursor.close()
             return jsonify({"noUser":msg})
-        
+
         sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
         cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
         alreadyIn = cursor.fetchall()
@@ -379,7 +379,7 @@ def deFriend():
         msg = "there is no such a user with name " + fName + " " + lName
         cursor.close()
         return jsonify({"noUser":msg})
-    
+
     sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
     cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
     alreadyIn = cursor.fetchall()
@@ -446,6 +446,21 @@ def posttag(item_id):
 
         return 'hah'
 
+@app.route("/gallery")
+def renderGallery():
+    return render_template("gallery.html")
+
+@app.route("/post/gallery")
+def gallery():
+    cursor = conn.cursor()
+    if 'user' in session:
+        query = "SELECT DISTINCT file_path FROM contentItem JOIN share USING(item_id) JOIN belong ON(belong.owner_email = share.owner_email AND belong.fg_name = share.fg_name) WHERE belong.email = (%s) UNION all SELECT DISTINCT file_path FROM contentItem where is_pub = true"
+        cursor.execute(query,session['user'])
+    else:
+        query = "SELECT file_path FROM contentItem where is_pub = true"
+        cursor.execute(query)
+    data = cursor.fetchall()
+    return jsonify({'data':data})
 
 
 @app.route("/logout")

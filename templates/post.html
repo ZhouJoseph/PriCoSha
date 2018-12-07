@@ -50,7 +50,7 @@
             <h3>Hi {{email}}</h3>
             {% if 'user' in session %}
             <div id="postForm" style="width:50%;min-width: 400px;">
-
+                <a href="{{url_for('renderGallery')}}">view gallery!</a>
                 <a href="#myModal" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal" style="width:100%">What's on your mind</a>
 
                 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -178,6 +178,7 @@
                         var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4],posts.data[5]);
                         // prepend: add to the top of the div with id=posts
                         $("#posts").prepend(span);
+                        document.location.reload()
                     },
                     error: function(err){
                         alert("umm");
@@ -218,6 +219,7 @@
                     $("#groupModal").modal('hide');
                     var span = generateSpan(posts.data[0],posts.data[1],posts.data[2],posts.data[3],posts.data[4],posts.data[5]);
                     $("#posts").prepend(span);
+                    document.location.reload()
                 },
                 error:function(err){
                     alert("err")
