@@ -82,9 +82,15 @@
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{row[9]}}</h5>
               <p><small>{{row[7]}}</small></p>
+<<<<<<< HEAD
               <div class="accept-deny" role="decide" aria-label="Toolbar with button groups">
                 <button class="accept-deny" type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
                 <button class="accept-deny" type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
+=======
+              <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
+                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
+                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
+>>>>>>> parent of a0bd539... someone fix propagation plz
               </div>
             </div>
             <p class="mb-1">{{row[1]}} tags you</p>
@@ -107,7 +113,10 @@
     var res = new Array();
 
       function accept_tag(elem){
+<<<<<<< HEAD
         elem.stopPropagation();
+=======
+>>>>>>> parent of a0bd539... someone fix propagation plz
         var item_id = $(elem).attr('data-itemId');
         var taggee = $(elem).attr('data-taggee');
         var tagger = $(elem).attr('data-tagger');
@@ -117,13 +126,10 @@
         res.push(decision);
         var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
-        update("accepted");
+        update();
       }
 
       function reject_tag(elem){
-        document.getElementByClassName("accept-deny").addEventListener("click", function(event){
-          event.stopPropagation()
-        });
         var item_id = $(elem).attr('data-itemId');
         var taggee = $(elem).attr('data-taggee');
         var tagger = $(elem).attr('data-tagger');
@@ -134,17 +140,17 @@
         res.push(decision);
         var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
-        update("denied");
+        update();
       }
 
-      function update(status){
+      function update(){
         $.ajax({
             type:"POST",
             data:{'data':res},
             url: "/tag",
             success: function(){
 
-              alert(status);
+              alert('success');
             },
             error: function(err){
                 alert("umm");
