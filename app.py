@@ -44,14 +44,25 @@ def index():
         query = "SELECT * FROM tag join contentitem ON (contentitem.item_id = tag.item_id) where email_tagged = (%s) and status = 'Pending'"
         cursor.execute(query,session['user'])
         data = cursor.fetchall()
-        print(data)
         return render_template("index.html", tag_data = data)
     else:
         return render_template("index.html")
 
 @app.route("/tag", methods = ["POST"])
 def tag():
-    pass
+    cursor = conn.cursor()
+    tag_key = request.form.getlist('data[]')
+    status = tag_key[3]
+    tagger = tag_key[2]
+    taggee = tag_key[1]
+    itemid = tag_key[0]
+    sql = "UPDATE tag SET status = (%s) WHERE item_id = (%s) AND email_tagger = (%s) AND email_tagged = (%s)"
+    print(tagger, taggee, itemid)
+    cursor.execute(sql,(status,itemid,tagger, taggee))
+    conn.commit()
+    cursor.close()
+    return render_template("index.html")
+
 
 
 @app.route("/login")
@@ -172,7 +183,6 @@ def postPrivateBlog():
     is_pubB = False
     groups = request.form["group"]
     groups = groups.split(",")
-    print(groups)
     groups = [True if int(i) == 1 else False for i in groups]
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')

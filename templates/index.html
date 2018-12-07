@@ -77,14 +77,14 @@
       <p class="header">Here are your tags:</p>
       <ul>
         {% for row in tag_data %}
-        <div id="received-tags">
+        <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
           <a href="" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{row[9]}}</h5>
               <p><small>{{row[7]}}</small></p>
               <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
-                <button type="button" class="btn btn-secondary" onclick="accept_tag()">Accept</button>
-                <button type="button" class="btn btn-secondary" onclick="reject_tag()">Deny</button>
+                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
+                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
               </div>
             </div>
             <p class="mb-1">{{row[1]}} tags you</p>
@@ -102,29 +102,48 @@
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <script>
-      function accept_tag(){
-        alert('accept');
-        var x = document.getElementById("received-tags");
-        x.style.display = "none";
+    var decision = 1
+    Boolean (decision);
+    var res = new Array();
 
+      function accept_tag(elem){
+        var item_id = $(elem).attr('data-itemId');
+        var taggee = $(elem).attr('data-taggee');
+        var tagger = $(elem).attr('data-tagger');
+        res.push(item_id);
+        res.push(taggee);
+        res.push(tagger);
+        res.push(decision);
+        alert(decision);
+        var x = document.getElementById(taggee + tagger + String(item_id));
+        x.style.display = "none";
+        update();
       }
 
-      function reject_tag(){
-        alert('reject');
-        var x = document.getElementById("received-tags");
+      function reject_tag(elem){
+        var item_id = $(elem).attr('data-itemId');
+        var taggee = $(elem).attr('data-taggee');
+        var tagger = $(elem).attr('data-tagger');
+        res.push(item_id);
+        res.push(taggee);
+        res.push(tagger);
+        decision = 0;
+        res.push(decision);
+        var x = document.getElementById(taggee + tagger + str(item_id));
         x.style.display = "none";
+        update();
       }
 
       function update(){
+
+        alert("In update");
         $.ajax({
             type:"POST",
-            data:form_data,
+            data:{'data':res},
             url: "/tag",
-            cache:false,
-            processData:false,
-            contentType:false,
-            success: function(tags){
+            success: function(){
 
+              alert('success');
             },
             error: function(err){
                 alert("umm");
