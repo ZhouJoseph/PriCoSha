@@ -310,7 +310,7 @@ def addFriend():
             msg = "there is no such a user with name " + fName + " " + lName
             cursor.close()
             return jsonify({"noUser":msg})
-        
+
         sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
         cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
         alreadyIn = cursor.fetchall()
@@ -331,7 +331,7 @@ def addFriend():
                 msg ="Congratulation! user " + fName + " " + lName +" SUCCESSFULLY added!"
                 return jsonify({"added":msg})
         else:
-            return jsonify({"dup":friendID})      
+            return jsonify({"dup":friendID})
 
 
 @app.route("/groups/defriend", methods=['DELETE'])
@@ -356,7 +356,7 @@ def deFriend():
         msg = "there is no such a user with name " + fName + " " + lName
         cursor.close()
         return jsonify({"noUser":msg})
-    
+
     sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
     cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
     alreadyIn = cursor.fetchall()
