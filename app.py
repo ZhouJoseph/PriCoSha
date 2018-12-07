@@ -48,6 +48,7 @@ def index():
     else:
         return render_template("index.html")
 
+#update peding tags that users can accept or deny
 @app.route("/tag", methods = ["POST"])
 def tag():
     cursor = conn.cursor()
