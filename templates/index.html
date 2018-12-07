@@ -85,8 +85,6 @@
 
             </div>
             <p class="mb-1">{{row[1]}} tags you</p>
-
-
           </a>
           <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
             <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
@@ -144,7 +142,6 @@
             url: "/tag",
             success: function(){
               alert(status);
-
             },
             error: function(err){
                 alert("umm");

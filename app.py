@@ -221,7 +221,6 @@ def detailedBlog(item_id):
     cursor = conn.cursor()
 
     # we need to check if the current user have access to this page or not.
-
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)
@@ -251,6 +250,7 @@ def GroupManagement():
 
 @app.route("/groups/fetch")
 def groupFetch():
+    print('fetching');
     if 'user' in session:
         cursor = conn.cursor()
         query = 'select belong.fg_name,friendgroup.description,belong.owner_email from belong join friendgroup using(owner_email,fg_name) where belong.email = (%s)'
@@ -333,6 +333,28 @@ def addFriend():
         else:
             return jsonify({"dup":friendID})
 
+'''
+@app.route("/groups/friendAddWithEmail", methods = ['POST'])
+def addFriendWithEmail():
+    cursor = conn.cursor()
+    fName = request.form['firstName']
+    lName = request.form['lastName']
+    fg_name = request.form['fg_name']
+    email = request.form['email']
+    sqlCheck = "select email from person where fname =(%s) and lname = (%s) except select email from belong where owner_email = (%s) and fg_name = (%s)"
+    cursor.execute(sqlCheck, (fName, lName, email, fg_name))
+    available = cursor.fetchall()
+    for i in range(len(available)):
+        if availavle[i][0] == email:
+            sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+            cursor.execute(sqlInsert, (friendID, session['user'], fg_name))
+            conn.commit()
+            cursor.close()
+            msg = "Congratulation! user " + fName + " " + lName + " SUCCESSFULLY added!"
+            return jsonify({"added": msg})
+    msg = "Invalid Email. Be careful PLEASE!"
+    cursor.close()
+    return jsonify({"failed":msg})'''
 
 @app.route("/groups/defriend", methods=['DELETE'])
 def deFriend():
@@ -374,8 +396,8 @@ def deFriend():
                 msg = "You can't do that! You are the Master of this group!"
                 cursor.close()
                 return jsonify({"suicide":msg})
-            friendID = friendID[0]
-            sqlDelete = "delete from belong (email, owner_email, fg_name) values (%s, %s, %s)"
+            friendID = friendID[0][0]
+            sqlDelete = "delete from belong where email = (%s) and owner_email = (%s) and fg_name = (%s)"
             cursor.execute(sqlDelete, (friendID, session['user'], fg_name))
             conn.commit()
             cursor.close()
@@ -383,6 +405,7 @@ def deFriend():
             return jsonify({"deleted":msg})
     else:
         return jsonify({"dup":friendID})
+
 
 @app.route("/post/blog/<item_id>/comment",methods=['GET','POST'])
 def comment(item_id):
