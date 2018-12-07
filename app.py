@@ -221,7 +221,6 @@ def detailedBlog(item_id):
     cursor = conn.cursor()
 
     # we need to check if the current user have access to this page or not.
-
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)
@@ -445,7 +444,7 @@ def posttag(item_id):
             elif content[i] == '@' and i == 0:continue
             else:l.append(content[i])
         taggee.append(str(''.join(l)).strip())
-
+        #print(taggee);
         return 'hah'
 
 @app.route("/gallery")

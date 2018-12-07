@@ -48,9 +48,9 @@
 
         <center>
             <h3>Hi {{email}}</h3>
+            <a href="{{url_for('renderGallery')}}">view gallery!</a>
             {% if 'user' in session %}
             <div id="postForm" style="width:50%;min-width: 400px;">
-                <a href="{{url_for('renderGallery')}}">view gallery!</a>
                 <a href="#myModal" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal" style="width:100%">What's on your mind</a>
 
                 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
