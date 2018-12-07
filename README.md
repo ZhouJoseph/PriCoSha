@@ -18,7 +18,7 @@
 - <Del>Show data</Del>
 - Add comments
 - Defriend
-- Tagging a group
+- <Del>View Image Gallery</Del>
 # Additional Feature
 - <Del>Create Group</Del>
 - <Del>Sign up</Del>
