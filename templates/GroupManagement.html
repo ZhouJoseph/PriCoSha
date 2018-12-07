@@ -64,7 +64,7 @@
     <ul class="list-group" style="width:50%;min-width: 300px" id="groups"></ul>
     </center>
 
-    <div id="friendAdd", class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="friendAdd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -85,10 +85,6 @@
             </div>
         </div>
     </div>
-
-
-<!-- #Create FG, Give it a Unique name, Might add description
-#Might add User to FG, no duplication allowed -->
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
@@ -135,7 +131,7 @@
 
         var selected_fg = ''
         function addGroup(elem){
-            var fg_name = $(elem).data('fgName');
+            var fg_name = $(elem).attr('data-fgName');
             selected_fg = fg_name;
             $("#friendAdd").modal('show');
         }
@@ -152,10 +148,27 @@
                     "fg_name": selected_fg,
                 },
                 success: function(info){
-                    alert('delete');
-                },
-                error: function(err){
-                    alert("Error");
+                    if(info.noUser){
+                        alert(info.noUser);
+                    }
+                    if(info.notIn){
+                        alert(info.notIn);
+                    }
+                    if(info.deleted){
+                        alert(info.deleted);
+                    }
+                    if(info.suicide){
+                        alert(info.suicide);
+                    }
+                    if(info.dup){
+                        var dupArray = [];
+                        for(var i = 0; i < info.dup.length; i++){
+                            var data = info.dup[i];
+                            var temp = [data[0],data[1],data[2]];
+                            dupArray.push(temp);
+                        }
+                        alert(dupArray);
+                    }
                 }
             })
         }
@@ -174,6 +187,21 @@
                 success: function(info){
                     if(info.noUser){
                         alert(info.noUser);
+                    }
+                    if(info.alreadyIn){
+                        alert(info.alreadyIn);
+                    }
+                    if(info.added){
+                        alert(info.added);
+                    }
+                    if(info.dup){
+                        var dupArray = [];
+                        for(var i = 0; i < info.dup.length; i++){
+                            var data = info.dup[i];
+                            var temp = [data[0],data[1],data[2]];
+                            dupArray.push(temp);
+                        }
+                        alert(dupArray);
                     }
                 },
                 error: function(err){

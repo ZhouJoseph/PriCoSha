@@ -278,39 +278,27 @@ def createGroup():
 
 @app.route("/groups/friendAdd", methods=['POST'])
 def addFriend():
-    print('aaaaa')
     cursor = conn.cursor()
     fName = request.form['firstName']
     lName = request.form['lastName']
+    fg_name = request.form['fg_name']
     try:
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlCount, (fName,lName))
         count = cursor.fetchone()
         count = count[0] # reformat count
-        print("1")
         sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlEmail, (fName, lName))
-        print('2')
-        friendID = cursor.fetchone()
-        friendID = friendID[0]
-        print("ffff")
-
-        # 1. count == 0
-        # 2. count == 1
-            # 2.1 IN
-            # 2.2 NOT IN
-        # 3. COUNT > 1
-            # RETURN NAME + EMAIL, NOT IN
+        friendID = cursor.fetchall()
     finally:
         if count == 0:
             msg = "there is no such a user with name " + fName + " " + lName
             cursor.close()
             return jsonify({"noUser":msg})
         
-        sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"mengzhe@nyu.edu", 'friends'))
+        sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
+        cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
         alreadyIn = cursor.fetchall()
-        
         if count == 1:
             if alreadyIn:
                 msg = "user " + fName + " " + lName +" is already in this group"
@@ -319,63 +307,66 @@ def addFriend():
                 return jsonify({"alreadyIn":msg})
             else:
                 print("not in")
+                friendID = friendID[0]
                 sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-                cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
+                cursor.execute(sqlInsert, (friendID, session['user'], fg_name))
                 conn.commit()
                 cursor.close()
                 msg ="Congratulation! user " + fName + " " + lName +" SUCCESSFULLY added!"
                 return jsonify({"added":msg})
-        else:        # 3. COUNT > 1 # RETURN NAME + EMAIL, NOT IN
+        else:
+            return jsonify({"dup":friendID})      
 
 
-
-        # if (count and count[0] > 1):
-        #     msg = '''duplicated name, further request of email address'''
-        #     return '''Error Message'''
-        # elif (not alreadyIn) and friendID:
-        #     sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-        #     cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
-        #     conn.commit()
-        #     cursor.close()
-        #     return """Update group"""
-        # elif (alreadyIn):
-        #     msg = "Friend Already in Group"
-        #     return '''Error Message'''
-        # else:
-        #     msg = "Invalid Friend Email"
-        #     return '''Error Message'''
-
-@app.route("/groups/defriend", methods=['post'])
+@app.route("/groups/defriend", methods=['DELETE'])
 def deFriend():
     cursor = conn.cursor()
-    fName = request.form["firstName"]
-    lName = request.form["lastName"]
-    try:
-        sqlCount = "select count(distinct email) from person join belong on (email) where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlCount, (fName,lName))
-        count = cursor.fetchone()
-        sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlEmail, (fName, lName))
-        friendID = cursor.fetchone()
-        sqlAlreadyIn = "select * from belong join person on (email) where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"ownerEmail", 'fg_name'))
-        alreadyIn = cursor.fetchone()
+    fName = request.form['firstName']
+    lName = request.form['lastName']
+    fg_name = request.form['fg_name']
+    print("deleteing")
+    #amount of people with such name in target group
+    sqlCount = "select count(distinct email) from person natural join belong where fname = (%s) and lname = (%s) and owner_email = (%s) and fg_name=(%s)"
+    cursor.execute(sqlCount, (fName,lName, session["user"], fg_name))
+    count = cursor.fetchone()
+    count = count[0] # reformat count
+    print("count: ",count)
+    sqlEmail = "select email from person natural join belong where fname = (%s) and lname = (%s) and owner_email = (%s) and fg_name=(%s)"
+    cursor.execute(sqlEmail, (fName, lName, session["user"], fg_name))
+    friendID = cursor.fetchall()
 
-    finally:
-        if (count and count[0] > 1):
-            '''duplicated name, further request of email address'''
-        elif (alreadyIn) and friendID:
-            sqldelete = "delete from belong where email=(%s) and owner_email=(%s) and fg_name=(%s)"
-            cursor.execute(sqlDelete, (friendID, ownerID, fg_name))
+    if count == 0:
+        print("0")
+        msg = "there is no such a user with name " + fName + " " + lName
+        cursor.close()
+        return jsonify({"noUser":msg})
+    
+    sqlAlreadyIn = "select fname, lname, email from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
+    cursor.execute(sqlAlreadyIn,(fName,lName, session['user'], fg_name))
+    alreadyIn = cursor.fetchall()
+    if count == 1:
+        print("1")
+        if not alreadyIn:
+            msg = "user " + fName + " " + lName +" is already in this group"
+            print("notIn")
+            cursor.close()
+            return jsonify({"notIn":msg})
+        else: #delete user
+            print("User is In")
+            if friendID[0][0] == session["user"]:
+                print("suicide")
+                msg = "You can't do that! You are the Master of this group!"
+                cursor.close()
+                return jsonify({"suicide":msg})
+            friendID = friendID[0]
+            sqlDelete = "delete from belong (email, owner_email, fg_name) values (%s, %s, %s)"
+            cursor.execute(sqlDelete, (friendID, session['user'], fg_name))
             conn.commit()
             cursor.close()
-            return """Updata group"""
-        elif (not alreadyIn):
-            msg = "Person not in Group"
-            return '''Error Message'''
-        else:
-            msg = "Invalid Friend Email"
-            return '''Error Message'''
+            msg ="All Right! user " + fName + " " + lName +" SADLY deleted!"
+            return jsonify({"deleted":msg})
+    else:
+        return jsonify({"dup":friendID})
 
 @app.route("/post/blog/<item_id>/comment",methods=['GET','POST'])
 def comment(item_id):
