@@ -4,21 +4,23 @@
 - BootStrap
 - JQuery
 # Team Member
-- Kaixuan Zhou
-- Ruiqi Tao
-- Mengzhe Ding
-# Feature Done
+- Kaixuan Zhou [kz1005]
+- Ruiqi Tao    [rt1726]
+- Mengzhe Ding [md3837]
+# Feature Done & Project Distribution
+#### Kaixuan Zhou ####
 - <Del>View Public Content</Del>
-- <Del>Login</Del>
-- <Del>View shared content items and info about them</Del>
-- Manage tags
+- <Del>View shared content items and detailed info about them</Del>
 - <Del>Post a content</Del>
-- Tag a content item
-- Add friend
-- <Del>Show data</Del>
-- Add comments
-- Defriend
+- <Del>Show data(show image/text of posts)</Del>
 - <Del>View Image Gallery</Del>
-# Additional Feature
+### Ruiqi Tao
+- <Del>Login</Del>
+- Manage tags
+- Tag a content item
+### Mengzhe Ding
+- Add friend
+- Defriend
 - <Del>Create Group</Del>
-- <Del>Sign up</Del>
+### Collaborately Build
+- <Del>Add comments</Del>
