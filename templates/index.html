@@ -82,7 +82,7 @@
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{row[9]}}</h5>
               <p><small>{{row[7]}}</small></p>
-              <div onclick="event.stopPropagation(); alert('you clicked inside the header');" class="accept-deny" role="decide" aria-label="Toolbar with button groups">
+              <div class="accept-deny" role="decide" aria-label="Toolbar with button groups">
                 <button class="accept-deny" type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
                 <button class="accept-deny" type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
               </div>
@@ -107,7 +107,7 @@
     var res = new Array();
 
       function accept_tag(elem){
-
+        elem.stopPropagation();
         var item_id = $(elem).attr('data-itemId');
         var taggee = $(elem).attr('data-taggee');
         var tagger = $(elem).attr('data-tagger');
