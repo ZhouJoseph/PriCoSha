@@ -419,7 +419,7 @@ def posttag(item_id):
             elif content[i] == '@' and i == 0:continue
             else:l.append(content[i])
         taggee.append(str(''.join(l)).strip())
-
+        #print(taggee);
         return 'hah'
 
 @app.route("/gallery")
