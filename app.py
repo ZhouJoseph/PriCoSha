@@ -278,6 +278,7 @@ def createGroup():
 
 @app.route("/groups/friendAdd", methods=['POST'])
 def addFriend():
+    print('aaaaa')
     cursor = conn.cursor()
     fName = request.form['firstName']
     lName = request.form['lastName']
@@ -286,9 +287,13 @@ def addFriend():
         cursor.execute(sqlCount, (fName,lName))
         count = cursor.fetchone()
         count = count[0] # reformat count
+        print("1")
         sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlEmail, (fName, lName))
+        print('2')
         friendID = cursor.fetchone()
+        friendID = friendID[0]
+        print("ffff")
 
         # 1. count == 0
         # 2. count == 1
@@ -299,15 +304,31 @@ def addFriend():
     finally:
         if count == 0:
             msg = "there is no such a user with name " + fName + " " + lName
+            cursor.close()
             return jsonify({"noUser":msg})
         
         sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"md3837@nyu.edu", 'PrivateGroup'))
+        cursor.execute(sqlAlreadyIn,(fName,lName,"mengzhe@nyu.edu", 'friends'))
         alreadyIn = cursor.fetchall()
         
         if count == 1:
-            return "hhahahah"
-        return "hah"
+            if alreadyIn:
+                msg = "user " + fName + " " + lName +" is already in this group"
+                print("AlreadyIn")
+                cursor.close()
+                return jsonify({"alreadyIn":msg})
+            else:
+                print("not in")
+                sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+                cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
+                conn.commit()
+                cursor.close()
+                msg ="Congratulation! user " + fName + " " + lName +" SUCCESSFULLY added!"
+                return jsonify({"added":msg})
+        else:        # 3. COUNT > 1 # RETURN NAME + EMAIL, NOT IN
+
+
+
         # if (count and count[0] > 1):
         #     msg = '''duplicated name, further request of email address'''
         #     return '''Error Message'''
