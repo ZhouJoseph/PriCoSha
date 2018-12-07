@@ -77,10 +77,10 @@
                         <div class="modal-body">
                             <input style="margin-top:2px;" class="form-control" type="text" id="fName" name="firstName" placeholder="FistName" required/>
                             <input style="margin-top:2px;" class="form-control" type="text" id="lName" name="lastName" placeholder="LastName" required/>
-                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="addFriend()">Add</button>
-                            <button class="btn btn-outline-dark mb-2" type="submit" style="width:49%" onclick="deFriend()">Delete</button>
                         </div>
                     </form>
+                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="addFriend()">Add</button>
+                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="deFriend()">Delete</button>
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@
                 },
                 success: function(info){
                     if(info.fg_name && info.owner){
-                        updateGroupUI(info.fg_name,info.description,info.owner);
+                        updateGroupUI(info.fg_name,info.description,info.owner,info.owner);
                     }else{
                         alert('You cannot own two groups with the same name');
                     }
@@ -122,8 +122,8 @@
         function generateSpan(fg_name,description,owner,user){
             if(owner == user) {
                 var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
-                    + description + '; owner: ' + owner + '; user: ' + user +
-                    '<a href="#friendAdd" role="button" class="btn btn-outline-dark mb-2" data-toggle="modal">Add/De friend</a>' +
+                    + description + '; owner: ' + owner +
+                    '<button data-email="' + owner + '" data-fgName="'+fg_name+'" role="button" class="btn btn-outline-dark mb-2" onclick="addGroup(this)">Add/De friend</button>' +
                     '</span>'
             }
             else {
@@ -133,18 +133,48 @@
             return span;
         };
 
+        var selected_fg = ''
+        function addGroup(elem){
+            var fg_name = $(elem).data('fgName');
+            selected_fg = fg_name;
+            $("#friendAdd").modal('show');
+        }
+
+        function deFriend(){
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
+            $.ajax({
+                type: "DELETE",
+                url: "/groups/defriend",
+                data:{
+                    "firstName": fname,
+                    "lastName": lname,
+                    "fg_name": selected_fg,
+                },
+                success: function(info){
+                    alert('delete');
+                },
+                error: function(err){
+                    alert("Error");
+                }
+            })
+        }
+
         function addFriend(){
-            var fname = $("#fName".val());
-            var lname = $('#lName'.val());
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
             $.ajax({
                 type: "POST",
                 url: "/groups/friendAdd",
                 data:{
                     "firstName": fname,
                     "lastName": lname,
+                    "fg_name": selected_fg,
                 },
                 success: function(info){
-                    alert("Great!");
+                    if(info.noUser){
+                        alert(info.noUser);
+                    }
                 },
                 error: function(err){
                     alert("Error")

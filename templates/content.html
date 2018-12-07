@@ -69,6 +69,8 @@
     <br>
     {% if 'user' in session %}
         <button id="comment">comment</button>
+        <button id="tag">tag</button>
+        <div id="tagArea"></div>
         <div id="commentArea"></div>
     {% endif %}
     {% if 'user' not in session %}
@@ -81,9 +83,14 @@
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script>
 
+        $("#tag").on('click',function(){
+            var input = "<button onclick='cancelTag()'>cancel</button><input id='tagInput' placeholder='e.g. @Kyle Li' name='tag'></input><button onclick='postTag()'>Tag!</button";
+            $("#tagArea").append(input);
+            $("#tag").css("display","none");
+        });
 
         $("#comment").on('click',function(){
-            var input = "<button onclick='cancel()'>cancel</button><input name='comment'></input><button onclick='post()'>post</button>"
+            var input = "<button onclick='cancel()'>cancel</button><input id='commentInput' placeholder='comment' name='comment'></input><button onclick='post()'>post</button>"
             $("#commentArea").append(input);
             $("#comment").css("display","none");
         });
@@ -91,11 +98,6 @@
         function commentSpan(fname,lname,comment){
             var span = "<span>"+lname+","+fname+" : "+comment+"</span>";
             $("#userComments").append(span);
-        };
-
-        function cancel(){
-            $("#commentArea").empty();
-            $("#comment").css("display","block");
         };
 
         $.ajax({
@@ -110,8 +112,31 @@
             error:function(err){alert('sth went wrong');},
         })
 
+        function cancelTag(){
+            $("#tagArea").empty();
+            $("#tag").css("display","inline-block");
+        };
+        function cancel(){
+            $("#commentArea").empty();
+            $("#comment").css("display","inline-block");
+        };
+
+        function postTag(){
+            var tag = $("#tagInput").val();
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + "/tag",
+                data:{'tag':tag},
+                success:function(info){
+                    alert(info);
+                },
+                error:function(err){alert('sth went wrong');},
+            });
+            cancelTag();
+        };
+
         function post(){
-            var comment = $("input").val();
+            var comment = $("#commentInput").val();
             $.ajax({
                 type: "POST",
                 url: window.location.pathname + "/comment",

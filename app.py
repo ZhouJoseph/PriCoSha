@@ -292,6 +292,7 @@ def createGroup():
 
 @app.route("/groups/friendAdd", methods=['POST'])
 def addFriend():
+    print('aaaaa')
     cursor = conn.cursor()
     fName = request.form['firstName']
     lName = request.form['lastName']
@@ -299,29 +300,64 @@ def addFriend():
         sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlCount, (fName,lName))
         count = cursor.fetchone()
+        count = count[0] # reformat count
+        print("1")
         sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
         cursor.execute(sqlEmail, (fName, lName))
+        print('2')
         friendID = cursor.fetchone()
-        sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
-        cursor.execute(sqlAlreadyIn,(fName,lName,"md3837@nyu.edu", 'PrivateGroup'))
-        alreadyIn = cursor.fetchone()
+        friendID = friendID[0]
+        print("ffff")
 
+        # 1. count == 0
+        # 2. count == 1
+            # 2.1 IN
+            # 2.2 NOT IN
+        # 3. COUNT > 1
+            # RETURN NAME + EMAIL, NOT IN
     finally:
-        if (count and count[0] > 1):
-            msg = '''duplicated name, further request of email address'''
-            return '''Error Message'''
-        elif (not alreadyIn) and friendID:
-            sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-            cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
-            conn.commit()
+        if count == 0:
+            msg = "there is no such a user with name " + fName + " " + lName
             cursor.close()
-            return """Update group"""
-        elif (alreadyIn):
-            msg = "Friend Already in Group"
-            return '''Error Message'''
-        else:
-            msg = "Invalid Friend Email"
-            return '''Error Message'''
+            return jsonify({"noUser":msg})
+
+        sqlAlreadyIn = "select * from belong Natural join person where fname=(%s) and lname=(%s) and owner_email=(%s) and fg_name=(%s)"
+        cursor.execute(sqlAlreadyIn,(fName,lName,"mengzhe@nyu.edu", 'friends'))
+        alreadyIn = cursor.fetchall()
+
+        if count == 1:
+            if alreadyIn:
+                msg = "user " + fName + " " + lName +" is already in this group"
+                print("AlreadyIn")
+                cursor.close()
+                return jsonify({"alreadyIn":msg})
+            else:
+                print("not in")
+                sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+                cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
+                conn.commit()
+                cursor.close()
+                msg ="Congratulation! user " + fName + " " + lName +" SUCCESSFULLY added!"
+                return jsonify({"added":msg})
+        else:        # 3. COUNT > 1 # RETURN NAME + EMAIL, NOT IN
+
+
+
+        # if (count and count[0] > 1):
+        #     msg = '''duplicated name, further request of email address'''
+        #     return '''Error Message'''
+        # elif (not alreadyIn) and friendID:
+        #     sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
+        #     cursor.execute(sqlInsert, (friendID, "md3837@nyu.edu", 'PrivateGroup'))
+        #     conn.commit()
+        #     cursor.close()
+        #     return """Update group"""
+        # elif (alreadyIn):
+        #     msg = "Friend Already in Group"
+        #     return '''Error Message'''
+        # else:
+        #     msg = "Invalid Friend Email"
+        #     return '''Error Message'''
 
 @app.route("/groups/defriend", methods=['post'])
 def deFriend():
@@ -375,6 +411,25 @@ def comment(item_id):
         data = cursor.fetchall()
         cursor.close()
         return jsonify({'data':data})
+
+@app.route("/post/blog/<item_id>/tag",methods=['GET','POST'])
+def tag(item_id):
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        content = request.form['tag']
+        taggee = []
+        l = []
+        for i in range(len(content)):
+            if content[i] == '@' and i != 0:
+                taggee.append(str(''.join(l)).strip())
+                l = []
+            elif content[i] == '@' and i == 0:continue
+            else:l.append(content[i])
+        taggee.append(str(''.join(l)).strip())
+
+        return 'hah'
+
+
 
 @app.route("/logout")
 def logout():
