@@ -78,7 +78,7 @@
       <ul>
         {% for row in tag_data %}
         <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
-          <a href="" class="list-group-item list-group-item-action flex-column align-items-start">
+          <a href="/post/blog/{{row[2]|string}}" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{row[9]}}</h5>
               <p><small>{{row[7]}}</small></p>
