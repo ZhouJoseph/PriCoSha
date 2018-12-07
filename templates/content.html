@@ -47,6 +47,7 @@
 </nav>
 
 <center>
+    {% if item!="False" %}
     {{ item[4] }}
     <br>
 
@@ -78,6 +79,9 @@
     {% endif %}
     <div id="userComments"></div>
     <div class="list-group" style="width:50%;min-width: 400px" id="posts"></div>
+    {% else %}
+    You don't have access to this post
+    {% endif %}
 </center>
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
