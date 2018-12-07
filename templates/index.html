@@ -77,19 +77,21 @@
       <p class="header">Here are your tags:</p>
       <ul>
         {% for row in tag_data %}
-        <a href="/post/blog/{{row[2]}}" class="list-group-item list-group-item-action flex-column align-items-start"></a>
-          <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{row[9]}}</h5>
-                <p><small>{{row[7]}}</small></p>
-                <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
-                  <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
-                  <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
-                </div>
-              </div>
-              <p class="mb-1">{{row[1]}} tags you</p>
+        <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
+          <a href="/post/blog/{{row[2]|string}}" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{row[9]}}</h5>
+              <p><small>{{row[7]}}</small></p>
+
+            </div>
+            <p class="mb-1">{{row[1]}} tags you</p>
+          </a>
+          <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
+            <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
+            <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
+
           </div>
-        </a>
+        </div>
         {% endfor %}
     </ul>
 
@@ -105,6 +107,7 @@
     Boolean (decision);
     var res = new Array();
 
+
       function accept_tag(elem){
         var item_id = $(elem).attr('data-itemId');
         var taggee = $(elem).attr('data-taggee');
@@ -115,7 +118,7 @@
         res.push(decision);
         var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
-        update();
+        update("accepted");
       }
 
       function reject_tag(elem){
@@ -129,22 +132,29 @@
         res.push(decision);
         var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
-        update();
+        update("denied");
       }
 
-      function update(){
+      function update(status){
         $.ajax({
             type:"POST",
             data:{'data':res},
             url: "/tag",
             success: function(){
+<<<<<<< HEAD
               alert('success');
+=======
+              alert(status);
+
+>>>>>>> 890a36515e87b8e416dbb8e99714c5e35a2165b0
             },
             error: function(err){
                 alert("umm");
             }
         })
+
       }
+
     </script>
 
   </body>

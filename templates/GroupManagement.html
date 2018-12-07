@@ -86,6 +86,28 @@
         </div>
     </div>
 
+    <!--we need two different form for add & delete email request.
+        They might look similar, but trust me, they are different
+    <div id="askEmailAdd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="myModalLabel">Please be more specific on who do you want to add</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You can add following people: </p>
+                    <div class="modal-body">
+                        {% for email in dupArray %}
+                        <li>Email: {{ email[0] }}, fName:{{ email[1] }}, lName:{{ email[2] }}</li>
+                        {% endfor %}
+                    </div>
+                    <input style="margin-top:2px;" class="form-control" type="text" id="email" name="email" placeholder="Please input email here" required/>
+                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="addFriendWithEmail()">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap-filestyle.min.js')}}"> </script>
@@ -116,6 +138,7 @@
         }
 
         function generateSpan(fg_name,description,owner,user){
+            <!--print("generating span");-->
             if(owner == user) {
                 var span = '<span class="list-group-item list-group-item-action disabled">' + fg_name + '; description: '
                     + description + '; owner: ' + owner +
@@ -209,6 +232,24 @@
                 }
             })
         };
+        /*
+        function addFriendWithEmail(){
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
+            var email = $("#email").val();
+            $.ajax({
+                type: "POST"
+                url:"/groups/friendAddWithEmail",
+                data:{
+                    "firstName": fname,
+                    "lastName": lname,
+                    "email":email,
+                    "fg_name": selected_fg
+                },
+                success: function(info) {
+                }
+            })
+        }*/
 
         $.ajax({
             type: "GET",
@@ -223,7 +264,7 @@
             error: function(err){
                 alert("err");
             }
-        });
+        }); //show all groups>
         function updateGroupUI(fg_name,description, owner, user){
             var span = generateSpan(fg_name,description,owner, user);
             $("#groups").append(span);
@@ -232,6 +273,8 @@
             $(".alert").hide();
         }
     </script>
+
+
 
 </body>
 
