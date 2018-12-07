@@ -16,6 +16,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 conn = pymysql.connect(host='127.0.0.1', user='pricosha', database='PriCoSha')
 
+def checkUser():
+    if 'user' not in session:
+        return redirect(url_for('login',error="you must login to access that page"))
+
 def encrypt(hash_str):
     return hashlib.sha256(hash_str.encode()).hexdigest()
 
@@ -219,8 +223,24 @@ def fetchBlogs():
 @app.route("/post/blog/<item_id>")
 def detailedBlog(item_id):
     cursor = conn.cursor()
-
     # we need to check if the current user have access to this page or not.
+    query = "SELECT is_pub from contentitem where item_id = (%s)"
+    cursor.execute(query,(item_id))
+    result = cursor.fetchone()
+    if not result:
+        return render_template('content.html',item="You don't have access to this blog",tag='',rate='',file='')
+    data = int(result[0])
+    if data == 0:
+        user = ''
+        if 'user' in session:
+            query = "SELECT fg_name, owner_email from contentitem JOIN share using (item_id) JOIN belong using(owner_email,fg_name) where item_id = (%s) and email = (%s)"
+            cursor.execute(query,(item_id,session['user']))
+            user = cursor.fetchone()
+        else:
+            return redirect(url_for('login',error="It's a private blog, you must login first"))
+        if user is None:
+            return render_template('content.html',item="False",tag='',rate='',file='')
+
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)
@@ -297,13 +317,15 @@ def addFriend():
     fName = request.form['firstName']
     lName = request.form['lastName']
     fg_name = request.form['fg_name']
+    print("in addFriend")
     try:
-        sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlCount, (fName,lName))
+        sqlCount = "select count(*) from (select email from person where fname = (%s) and lname = (%s) and email Not In (select email from belong where owner_email = (%s) and fg_name = (%s))) as T"
+        cursor.execute(sqlCount, (fName,lName, session['user'], fg_name))
         count = cursor.fetchone()
         count = count[0] # reformat count
-        sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlEmail, (fName, lName))
+        print("Count: ", count)
+        sqlEmail = "select email from person where fname = (%s) and lname = (%s) and email Not In (select email from belong where owner_email = (%s) and fg_name = (%s)"
+        cursor.execute(sqlEmail, (fName, lName, session['user'], fg_name))
         friendID = cursor.fetchall()
     finally:
         if count == 0:
@@ -333,7 +355,7 @@ def addFriend():
         else:
             return jsonify({"dup":friendID})
 
-'''
+
 @app.route("/groups/friendAddWithEmail", methods = ['POST'])
 def addFriendWithEmail():
     cursor = conn.cursor()
@@ -354,7 +376,7 @@ def addFriendWithEmail():
             return jsonify({"added": msg})
     msg = "Invalid Email. Be careful PLEASE!"
     cursor.close()
-    return jsonify({"failed":msg})'''
+    return jsonify({"failed":msg})
 
 @app.route("/groups/defriend", methods=['DELETE'])
 def deFriend():
