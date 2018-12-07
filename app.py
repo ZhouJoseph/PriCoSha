@@ -340,7 +340,9 @@ def addFriend():
                 cursor.close()
                 msg ="Congratulation! user " + fName + " " + lName +" SUCCESSFULLY added!"
                 return jsonify({"added":msg})
-        else:        # 3. COUNT > 1 # RETURN NAME + EMAIL, NOT IN
+        else:
+            return 'dadada'
+                    # 3. COUNT > 1 # RETURN NAME + EMAIL, NOT IN
 
 
 
@@ -414,7 +416,7 @@ def comment(item_id):
         return jsonify({'data':data})
 
 @app.route("/post/blog/<item_id>/tag",methods=['GET','POST'])
-def tag(item_id):
+def posttag(item_id):
     cursor = conn.cursor()
     if request.method == 'POST':
         content = request.form['tag']

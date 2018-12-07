@@ -114,7 +114,6 @@
         res.push(taggee);
         res.push(tagger);
         res.push(decision);
-        alert(decision);
         var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
         update();
@@ -129,14 +128,12 @@
         res.push(tagger);
         decision = 0;
         res.push(decision);
-        var x = document.getElementById(taggee + tagger + str(item_id));
+        var x = document.getElementById(taggee + tagger + String(item_id));
         x.style.display = "none";
         update();
       }
 
       function update(){
-
-        alert("In update");
         $.ajax({
             type:"POST",
             data:{'data':res},
