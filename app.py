@@ -221,7 +221,6 @@ def detailedBlog(item_id):
     cursor = conn.cursor()
 
     # we need to check if the current user have access to this page or not.
-
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
     cursor.execute(contentItem,item_id)

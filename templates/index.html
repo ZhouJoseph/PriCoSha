@@ -77,20 +77,19 @@
       <p class="header">Here are your tags:</p>
       <ul>
         {% for row in tag_data %}
-        <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
-          <a href="/post/blog/{{row[2]|string}}" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{row[9]}}</h5>
-              <p><small>{{row[7]}}</small></p>
-              <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
-                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
-                <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
+        <a href="/post/blog/{{row[2]}}" class="list-group-item list-group-item-action flex-column align-items-start"></a>
+          <div class="tags" id={{row[0]+row[1]+row[2]|string}} data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}}>
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{row[9]}}</h5>
+                <p><small>{{row[7]}}</small></p>
+                <div class="accept-or-deny" role="decide" aria-label="Toolbar with button groups">
+                  <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="accept_tag(this)">Accept</button>
+                  <button type="button" data-itemId={{row[2]}} data-taggee={{row[0]}} data-tagger={{row[1]}} class="btn btn-secondary" onclick="reject_tag(this)">Deny</button>
+                </div>
               </div>
-            </div>
-            <p class="mb-1">{{row[1]}} tags you</p>
-
-          </a>
-        </div>
+              <p class="mb-1">{{row[1]}} tags you</p>
+          </div>
+        </a>
         {% endfor %}
     </ul>
 
@@ -139,7 +138,6 @@
             data:{'data':res},
             url: "/tag",
             success: function(){
-
               alert('success');
             },
             error: function(err){
