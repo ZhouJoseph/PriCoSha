@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PriCoSha | Gallery</title>
+    <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">PriCoSha</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('index')}}">home</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="{{url_for('post')}}">post</a>
+            </li>
+            {% if 'user' not in session %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('login')}}">log in</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('signup')}}">sign up</a>
+            </li>
+            {% endif %}
+            {% if 'user' in session %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('GroupManagement')}}">your groups</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('logout')}}">logout</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="row" style="display:flex;flex-wrap:wrap;padding: 0 4px;">
+        <div class="col" style="max-width: 25%;flex:25%;padding: 0 4px" id="0"></div>
+        <div class="col" style="max-width: 25%;flex:25%;padding: 0 4px" id="1"></div>
+        <div class="col" style="max-width: 25%;flex:25%;padding: 0 4px" id="2"></div>
+        <div class="col" style="max-width: 25%;flex:25%;padding: 0 4px" id="3"></div>
+    </div>
+
+    <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script>
+        $.ajax({
+            type:"GET",
+            url:"/post/gallery",
+            success:function(info){
+                var counter = 0;
+                for(var i = 0; i < info.data.length; i++){
+                    if(info.data!='none'){
+                        var img = "<img src='" + info.data[i] + "' style='margin-top:8px;vertical-align: middle;width:100%'>"
+
+                        $("#"+String((i-counter)%4)).append(img)
+                    }else{
+                        counter+=1;
+                    }
+                }
+            },
+            error:function(err){
+                alert('err');
+            },
+        });
+    </script>
+</body>
+</html>
