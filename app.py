@@ -298,13 +298,15 @@ def addFriend():
     fName = request.form['firstName']
     lName = request.form['lastName']
     fg_name = request.form['fg_name']
+    print("in addFriend")
     try:
-        sqlCount = "select count(distinct email) from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlCount, (fName,lName))
+        sqlCount = "select count(*) from (select email from person where fname = (%s) and lname = (%s) and email Not In (select email from belong where owner_email = (%s) and fg_name = (%s))) as T"
+        cursor.execute(sqlCount, (fName,lName, session['user'], fg_name))
         count = cursor.fetchone()
         count = count[0] # reformat count
-        sqlEmail = "select email from person where fname = (%s) and lname = (%s)"
-        cursor.execute(sqlEmail, (fName, lName))
+        print("Count: ", count)
+        sqlEmail = "select email from person where fname = (%s) and lname = (%s) and email Not In (select email from belong where owner_email = (%s) and fg_name = (%s)"
+        cursor.execute(sqlEmail, (fName, lName, session['user'], fg_name))
         friendID = cursor.fetchall()
     finally:
         if count == 0:
@@ -334,7 +336,7 @@ def addFriend():
         else:
             return jsonify({"dup":friendID})
 
-'''
+
 @app.route("/groups/friendAddWithEmail", methods = ['POST'])
 def addFriendWithEmail():
     cursor = conn.cursor()
@@ -355,7 +357,7 @@ def addFriendWithEmail():
             return jsonify({"added": msg})
     msg = "Invalid Email. Be careful PLEASE!"
     cursor.close()
-    return jsonify({"failed":msg})'''
+    return jsonify({"failed":msg})
 
 @app.route("/groups/defriend", methods=['DELETE'])
 def deFriend():
