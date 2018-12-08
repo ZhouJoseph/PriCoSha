@@ -57,7 +57,6 @@
             <input type="text" class="form-control" id="description" name="description" placeholder="Description" autocomplete="off">
         </div>
         <button onclick="createGroup()" class="btn btn-primary" style="width:100%">Create</button>
-        </form>
     </div>
     <br>
     Your Groups:<br>
@@ -132,7 +131,6 @@
     <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap-filestyle.min.js')}}"> </script>
 
     <script>
-
         function createGroup(){
             var groupname = $('#groupname').val();
             var description = $('#description').val();
@@ -258,36 +256,20 @@
 
 
         function addFriendWithEmail(){
-            //var fname = $("#fName").val();
-            //var lname = $('#lName').val();
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
+            var emailList = $('#emailList').text();
             var email = $("#email").val();
-            $.ajax({
-                type: "DELETE",
-                url:"/groups/friendDeleteWithEmail",
-                data:{
-                    "firstName": fname,
-                    "lastName": lname,
-                    "email": email,
-                    "fg_name": selected_fg,
-                },
-                success: function(info) {
-                    if(info.added){
-                        alert("added");
-                    }
-                    if(info.failed){
-                        alert("failed");
-                    }
-                },
-                error: function(err){
-                    alert("Error");
+            {#
+            var find = false;
+            for(each in emailList){
+                if (email == each[0]) {
+                    find = true;
                 }
-            })
-        }
-        {#
-        function deFriendWithEmail(){
-            //var fname = $("#fName").val();
-            //var lname = $('#lName').val();
-            var email = $("#email").val();
+            }
+            if (find == false){
+                alert(find)
+            }#}
             $.ajax({
                 type: "POST",
                 url:"/groups/friendAddWithEmail",
@@ -309,7 +291,34 @@
                     alert("Error");
                 }
             })
-        }#}
+        }
+
+        function deFriendWithEmail(){
+            var fname = $("#fName").val();
+            var lname = $('#lName').val();
+            var email = $("#emailDelete").val();
+            $.ajax({
+                type: "DELETE",
+                url:"/groups/friendDeleteWithEmail",
+                data:{
+                    "firstName": fname,
+                    "lastName": lname,
+                    "email": email,
+                    "fg_name": selected_fg,
+                },
+                success: function(info) {
+                    if(info.deleted){
+                        alert("deleted");
+                    }
+                    if(info.failed){
+                        alert("failed");
+                    }
+                },
+                error: function(err){
+                    alert("Error");
+                }
+            })
+        }
 
         $.ajax({
             type: "GET",
@@ -333,9 +342,5 @@
             $(".alert").hide();
         }
     </script>
-
-
-
 </body>
-
 </html>

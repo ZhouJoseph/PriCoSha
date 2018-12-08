@@ -366,18 +366,22 @@ def addFriend():
 def addFriendWithEmail():
     print("in addFriendWithEmail")
     cursor = conn.cursor()
-    #fName = request.form['firstName']
-    #lName = request.form['lastName']
+    fName = request.form['firstName']
+    lName = request.form['lastName']
     fg_name = request.form['fg_name']
     email = request.form['email']
+    print(fName, lName)
     #check if input email is valid
+
+    # @@@@@@@@@@@@@@@MIGHT Have a BUG Below, Need Review@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
     sqlCheck = "select email from person where fname =(%s) and lname = (%s) and email not in (select email from belong where owner_email = (%s) and fg_name = (%s))"
     cursor.execute(sqlCheck, (fName, lName, session['user'], fg_name))
     available = cursor.fetchall()
     for i in range(len(available)):
-        if availavle[i][0] == email: # a valid input
+        if available[i][0] == email: # a valid input
             sqlInsert = "insert into belong (email, owner_email, fg_name) values (%s, %s, %s)"
-            cursor.execute(sqlInsert, (friendID, session['user'], fg_name))
+            cursor.execute(sqlInsert, (email, session['user'], fg_name))
             conn.commit()
             cursor.close()
             msg = "Congratulation! user " + fName + " " + lName + " SUCCESSFULLY added!"
@@ -403,7 +407,7 @@ def deFriend():
     sqlEmail = "select email from person natural join belong where fname = (%s) and lname = (%s) and owner_email = (%s) and fg_name=(%s) and email not in (%s)"
     cursor.execute(sqlEmail, (fName, lName, session["user"], fg_name, session["user"]))
     friendID = cursor.fetchall()
-
+    print("FINAL STEP??? of course not")
     if count == 0:
         print("0")
         msg = "there is no such a user with name " + fName + " " + lName + " in this group. btw, you can't delete youself"
@@ -431,6 +435,34 @@ def deFriend():
         return jsonify({"deleted":msg})
     else:
         return jsonify({"dup":friendID})
+
+@app.route("/groups/friendDeleteWithEmail", methods = ['Delete'])
+def deFriendWithEmail():
+    print("in Delete FriendWithEmail")
+    cursor = conn.cursor()
+    fName = request.form['firstName']
+    lName = request.form['lastName']
+    fg_name = request.form['fg_name']
+    email = request.form['email']
+    print(fName, lName)
+    #check if input email is valid
+    sqlCheck = "select email from person natural join belong where fname = (%s) and lname = (%s) and owner_email = (%s) and fg_name=(%s) and email not in (%s)"
+    cursor.execute(sqlCheck, (fName, lName, session['user'], fg_name, session['user']))
+    available = cursor.fetchall()
+    print("Given: ", email)
+    for i in range(len(available)):
+        print("checking ", available[i][0])
+        if available[i][0] == email: # a valid input
+            print("A valid email!")
+            sqlInsert = "delete from belong where email = (%s) and owner_email = (%s) and fg_name = (%s)"
+            cursor.execute(sqlInsert, (email, session['user'], fg_name))
+            conn.commit()
+            cursor.close()
+            msg = "All Right! user " + fName + " " + lName +" SADLY deleted!"
+            return jsonify({"deleted": msg})
+    msg = "Invalid Email. Be careful PLEASE!"
+    cursor.close()
+    return jsonify({"failed":msg})
 
 
 @app.route("/post/blog/<item_id>/comment",methods=['GET','POST'])
