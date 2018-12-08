@@ -260,22 +260,10 @@
             var lname = $('#lName').val();
             var emailList = $('#emailList').text();
             var email = $("#email").val();
-            {#
-            var find = false;
-            for(each in emailList){
-                if (email == each[0]) {
-                    find = true;
-                }
-            }
-            if (find == false){
-                alert(find)
-            }#}
             $.ajax({
                 type: "POST",
                 url:"/groups/friendAddWithEmail",
                 data:{
-                    "firstName": fname,
-                    "lastName": lname,
                     "email": email,
                     "fg_name": selected_fg,
                 },
@@ -292,7 +280,7 @@
                 }
             })
         }
-
+        
         function deFriendWithEmail(){
             var fname = $("#fName").val();
             var lname = $('#lName').val();

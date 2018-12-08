@@ -511,6 +511,7 @@ def posttag(item_id):
         members = ContentSharedGroup(cursor, item_id)
         msg = 'Tagged!'
         dup_name = False
+        dup_id = ''
         for i in taggee:
             #print('user: '+ session['user'])
             space_index = taggee[0].find(' ')
@@ -525,12 +526,13 @@ def posttag(item_id):
                 newData = (j[0], session['user'], int(item_id))
                 print(type(newData))
                 repeated = False
-                if j[0] in members:
+                if len(taggees_email) > 1:
                     dup_name = True
+                    dup_id = taggees_email
                 for i in data:
                     if ((i[0] == newData[0]) and (i[1] == newData[1]) and (i[2] == newData[2])):
                         repeated = True
-                if repeated == True or j[0] in members:
+                if repeated == False or j[0] in members:
                     if j[0] == session['user']:
                         cursor.execute(sql2, (j[0], session['user'], item_id, 1, timestamp))
                     else:
@@ -538,7 +540,8 @@ def posttag(item_id):
                 else:
                     msg = 'Sorry you cannot do this :('
         cursor.close()
-        return msg
+        print("dup_name", dup_name)
+        return jsonify({"msg":msg, "repeated": repeated, "dup_name":dup_name, "dup_id":dup_id})
 
 
 

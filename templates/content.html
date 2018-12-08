@@ -46,6 +46,25 @@
     </div>
 </nav>
 
+<div id="askEmailTag" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="myModalLabel">Please be more specific on who do you want to Tag</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <p>You can Tag following people: </p>
+                <div class="modal-body">
+                    <div id="emailList"></div>
+                </div>
+                <input style="margin-top:2px;" class="form-control" type="text" id="email" name="emailID" placeholder="Please input email here" required/>
+            </div>
+                <button class="btn btn-outline-dark mb-2" style="width:100%" onclick="addFriendWithEmail()">Tag</button>
+        </div>
+    </div>
+</div>
+
 <center>
     {% if item!="False" %}
     {{ item[4] }}
@@ -132,9 +151,21 @@
                 url: window.location.pathname + "/tag",
                 data:{'tag':tag},
                 success:function(info){
-                    alert(info);
-                },
-                error:function(err){alert('sth went wrong');},
+
+                    alert(info.msg);
+                    if((info.dup_name == true)&(info.repeated == false)){
+                    $("#emailList").empty();
+                    for(var i = 0; i < info.dup_id.length; i++){
+                        var data = info.dup_id[i][0];
+                        var para = "<p>" + data + "</p>";
+                        $("#emailList").append(para)
+                      }
+                      $("#askEmailTag").modal('show');
+                }
+
+              },
+                error:
+                function(err){alert('sth went wrong');},
             });
             cancelTag();
         };
