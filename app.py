@@ -228,7 +228,7 @@ def detailedBlog(item_id):
     cursor.execute(query,(item_id))
     result = cursor.fetchone()
     if not result:
-        return render_template('content.html',item="You don't have access to this blog",tag='',rate='',file='')
+        return render_template('content.html',item="You don't have access to this blog",tag='', rate='',file='')
     data = int(result[0])
     if data == 0:
         user = ''
@@ -239,7 +239,7 @@ def detailedBlog(item_id):
         else:
             return redirect(url_for('login',error="It's a private blog, you must login first"))
         if user is None:
-            return render_template('content.html',item="False",tag='',rate='',file='')
+            return render_template('content.html',item="False",tag='', rate='',file='')
 
     # content of a post
     contentItem = 'SELECT * FROM contentitem WHERE item_id = (%s)'
@@ -250,13 +250,26 @@ def detailedBlog(item_id):
     tag = 'SELECT fname,lname FROM person JOIN Tag ON (Tag.email_tagged = person.email) WHERE Tag.item_id = (%s) AND Tag.status=true'
     cursor.execute(tag,item_id)
     taggee = cursor.fetchall()
+    tagger = 'SELECT fname,lname FROM person JOIN Tag ON (Tag.email_tagger = person.email) WHERE Tag.item_id = (%s) AND Tag.status=true'
+    cursor.execute(tagger,item_id)
+    tagger = cursor.fetchall()
+    tag = [taggee,tagger]
+    result = []
+    for t in taggee:
+        result.append([t])
+    counter = 0
+    for t in tagger:
+        result[counter].append(t)
+        counter += 1
+
+
 
     # rating of a post
     rate = 'SELECT email, rate_time, emoji FROM rate where item_id = (%s)'
     cursor.execute(rate,item_id)
     rating = cursor.fetchall()
     cursor.close()
-    return render_template('content.html',item=content,tag=taggee,rate=rating,file=content[3])
+    return render_template('content.html',item=content,tag=result, rate=rating,file=content[3])
 
 
 @app.route("/groups")

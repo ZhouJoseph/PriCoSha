@@ -79,7 +79,7 @@
     {% if tag %}
         tags:
             {% for t in tag %}
-                {{ t }}<br>
+                {{ t[1] }} @ {{ t[0] }}<br>
             {% endfor %}
     {% endif %}
     {% if rate %}
