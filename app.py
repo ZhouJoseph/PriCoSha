@@ -491,6 +491,7 @@ def posttag(item_id):
         content = request.form['tag']
         taggee = []
         l = []
+        members = []
 
         ts = time.time()
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
@@ -518,7 +519,7 @@ def posttag(item_id):
         dup_name = False
         dup_id = ''
         repeated = False
-        members = []
+
         for i in taggee:
             #print('user: '+ session['user'])
             space_index = taggee[0].find(' ')
@@ -543,9 +544,12 @@ def posttag(item_id):
                             repeated = True
                     print(repeated)
                     test = False
+                    print(members)
                     for member in members:
-                        if member[0] == email:
+                        print(j[0], member, '\n')
+                        if member[0] == j[0]:
                             test = True
+                    print(test)
                     if repeated == False and test:
                         if j[0] == session['user']:
                             cursor.execute(sql2, (j[0], session['user'], item_id, 1, timestamp))
