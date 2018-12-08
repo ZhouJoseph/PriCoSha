@@ -542,13 +542,19 @@ def posttag(item_id):
                         if ((i[0] == newData[0]) and (i[1] == newData[1]) and (i[2] == newData[2])):
                             repeated = True
                     print(repeated)
-                    if repeated == False and j[0] in members:
+                    test = False
+                    for member in members:
+                        if member[0] == email:
+                            test = True
+                    if repeated == False and test:
                         if j[0] == session['user']:
                             cursor.execute(sql2, (j[0], session['user'], item_id, 1, timestamp))
+                            conn.commit()
                         else:
                             print('WHYYYYYYYYYY')
                             cursor.execute(sql2, (j[0], session['user'], item_id, 'Pending', timestamp))
                             conn.commit()
+                        msg = "Tagged!"
                     else:
                         msg = 'Sorry you cannot do this :('
         cursor.close()
@@ -574,8 +580,11 @@ def tagEmail(item_id):
     sql = "SELECT * FROM `tag` WHERE email_tagged = (%s) AND email_tagger = (%s) AND item_id = (%s)"
     sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
     print("email, members: ", email, members)
-    print(members)
-    if email in members:
+    test = False
+    for member in members:
+        if member[0] == email:
+            test = True
+    if test:
         print("HEREEEEEEEEEE")
         cursor.execute(sql, (email, session['user'], item_id))
         dup = cursor.fetchall()
