@@ -258,6 +258,28 @@
 
 
         function addFriendWithEmail(){
+            var email = $("#email").val();
+            $.ajax({
+                type: "POST",
+                url:"/groups/friendAddWithEmail",
+                data:{
+                    "email": email,
+                    "fg_name": selected_fg,
+                },
+                success: function(info) {
+                    if(info.added){
+                        alert("added");
+                    }
+                    if(info.failed){
+                        alert("failed");
+                    }
+                },
+                error: function(err){
+                    alert("Error");
+                }
+            })
+        }
+        function deFriendWithEmail(){
             //var fname = $("#fName").val();
             //var lname = $('#lName').val();
             var email = $("#email").val();
@@ -283,33 +305,6 @@
                 }
             })
         }
-        {#
-        function deFriendWithEmail(){
-            //var fname = $("#fName").val();
-            //var lname = $('#lName').val();
-            var email = $("#email").val();
-            $.ajax({
-                type: "POST",
-                url:"/groups/friendAddWithEmail",
-                data:{
-                    "firstName": fname,
-                    "lastName": lname,
-                    "email": email,
-                    "fg_name": selected_fg,
-                },
-                success: function(info) {
-                    if(info.added){
-                        alert("added");
-                    }
-                    if(info.failed){
-                        alert("failed");
-                    }
-                },
-                error: function(err){
-                    alert("Error");
-                }
-            })
-        }#}
 
         $.ajax({
             type: "GET",

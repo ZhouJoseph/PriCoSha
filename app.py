@@ -366,8 +366,6 @@ def addFriend():
 def addFriendWithEmail():
     print("in addFriendWithEmail")
     cursor = conn.cursor()
-    #fName = request.form['firstName']
-    #lName = request.form['lastName']
     fg_name = request.form['fg_name']
     email = request.form['email']
     #check if input email is valid
