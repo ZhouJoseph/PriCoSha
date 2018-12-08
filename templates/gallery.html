@@ -61,9 +61,8 @@
             success:function(info){
                 var counter = 0;
                 for(var i = 0; i < info.data.length; i++){
-                    if(info.data!='none'){
+                    if(info.data[i]!='none'){
                         var img = "<img src='" + info.data[i] + "' style='margin-top:8px;vertical-align: middle;width:100%'>"
-
                         $("#"+String((i-counter)%4)).append(img)
                     }else{
                         counter+=1;
