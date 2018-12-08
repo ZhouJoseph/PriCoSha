@@ -548,6 +548,7 @@ def posttag(item_id):
                         else:
                             print('WHYYYYYYYYYY')
                             cursor.execute(sql2, (j[0], session['user'], item_id, 'Pending', timestamp))
+                            conn.commit()
                     else:
                         msg = 'Sorry you cannot do this :('
         cursor.close()
@@ -582,6 +583,7 @@ def tagEmail(item_id):
         if len(dup) == 0:
             print("NOOOOOOOOOOOOOOO")
             cursor.execute(sql2, (email, session['user'], item_id, 'Pending', timestamp))
+            conn.commit()
         else:
             msg = 'Sorry you cannot do this'
     else:
