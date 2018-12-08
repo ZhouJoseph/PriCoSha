@@ -15,7 +15,7 @@
 - Ruiqi Tao    [rt1726]
 - Mengzhe Ding [md3837]
 # Feature Done & Project Distribution
-#### Kaixuan Zhou ####
+### Kaixuan Zhou
 1. <strong>View shared content items and detailed info about them</strong>: a page for users to see all the tags/rates/comments about a posted content
 2. <strong>Post a content</strong>: users can post a content, with an option of posting a image or not.
 3. <strong>Show data(show image/text of posts)</strong>: PriCoSha can receive the image users post. In the future there might be other file type added.
