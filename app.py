@@ -474,11 +474,18 @@ def posttag(item_id):
         sql1 = "SELECT `email` FROM person WHERE `fname` = (%s) AND `lname` = (%s)"      #find taggee's email
         sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
         sql3 = "SELECT `email_tagged`, `email_tagger`, `item_id` FROM `tag`"
-        members = ContentSharedGroup(cursor, item_id)
+        status = isPublic(cursor, item_id)
+        if status == 1:
+            sql = "SELECT email FROM person"
+            cursor.execute(sql)
+            members = cursor.fetchall()
+        else:
+            members = ContentSharedGroup(cursor, item_id)
         msg = 'Tagged!'
         dup_name = False
         dup_id = ''
         repeated = False
+        members = []
         for i in taggee:
             #print('user: '+ session['user'])
             space_index = taggee[0].find(' ')
@@ -521,11 +528,18 @@ def tagEmail(item_id):
     cursor = conn.cursor()
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    members = ContentSharedGroup(cursor, item_id)
+    status = isPublic(cursor, item_id)
+    members = []
+    if status == 1:
+        sql = "SELECT email FROM person"
+        cursor.execute(sql)
+        members = cursor.fetchall()
+    else:
+        members = ContentSharedGroup(cursor, item_id)
     sql = "SELECT * FROM `tag` WHERE email_tagged = (%s) AND email_tagger = (%s) AND item_id = (%s)"
     sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
     print("email, members: ", email, members)
-    print(email in members)
+    print(members)
     if email in members:
         print("HEREEEEEEEEEE")
         cursor.execute(sql, (email, session['user'], item_id))
@@ -541,6 +555,13 @@ def tagEmail(item_id):
 
     print("msg2", msg)
     return msg
+
+def isPublic(cursor, item_id):
+    sql = "SELECT is_pub FROM contentitem WHERE item_id = (%s)"
+    cursor.execute(sql, item_id)
+    status = cursor.fetchone()
+    return status
+
 
 def ContentSharedGroup(cursor, item_id):
     sql = "SELECT `fg_name` FROM share WHERE item_id = (%s)"
