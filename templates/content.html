@@ -58,9 +58,9 @@
                 <div class="modal-body">
                     <div id="emailList"></div>
                 </div>
-                <input style="margin-top:2px;" class="form-control" type="text" id="email" name="emailID" placeholder="Please input email here" required/>
+                <input id = "tag-using-Email" style="margin-top:2px;" class="form-control" type="text" id="email" name="emailID" placeholder="Please input email here" required/>
             </div>
-                <button class="btn btn-outline-dark mb-2" style="width:100%" onclick="addFriendWithEmail()">Tag</button>
+                <button class="btn btn-outline-dark mb-2" style="width:100%" onclick="TagFriendWithEmail()">Tag</button>
         </div>
     </div>
 </div>
@@ -169,6 +169,23 @@
             });
             cancelTag();
         };
+
+        function TagFriendWithEmail(){
+          var tag = $("#tag-using-Email").val();
+          $.ajax({
+            type: "POST",
+            url: window.location.pathname + "/tagEmail",
+            data:{'tag':tag},
+            success:function(msg){
+              $("#askEmailTag").modal('hide')
+              alert(msg)
+
+            },
+            error:
+            function(err){alert('sth went wrong');},
+        });
+        cancelTag();
+      };
 
         function post(){
             var comment = $("#commentInput").val();

@@ -480,6 +480,7 @@ def posttag(item_id):
         msg = 'Tagged!'
         dup_name = False
         dup_id = ''
+        repeated = False
         for i in taggee:
             #print('user: '+ session['user'])
             space_index = taggee[0].find(' ')
@@ -490,28 +491,58 @@ def posttag(item_id):
             for j in taggees_email:
                 cursor.execute(sql3)
                 data = cursor.fetchall()
-                print("same data", data)
+                print("dup data", data)
                 newData = (j[0], session['user'], int(item_id))
                 print(type(newData))
                 repeated = False
                 if len(taggees_email) > 1:
                     dup_name = True
                     dup_id = taggees_email
-                for i in data:
-                    if ((i[0] == newData[0]) and (i[1] == newData[1]) and (i[2] == newData[2])):
-                        repeated = True
-                if repeated == False or j[0] in members:
-                    if j[0] == session['user']:
-                        cursor.execute(sql2, (j[0], session['user'], item_id, 1, timestamp))
-                    else:
-                        cursor.execute(sql2, (j[0], session['user'], item_id, 'Pending', timestamp))
+                    msg = 'multiple people with same name D:'
                 else:
-                    msg = 'Sorry you cannot do this :('
+                    for i in data:
+                        if ((i[0] == newData[0]) and (i[1] == newData[1]) and (i[2] == newData[2])):
+                            repeated = True
+                    print(repeated)
+                    if repeated == False and j[0] in members:
+                        if j[0] == session['user']:
+                            cursor.execute(sql2, (j[0], session['user'], item_id, 1, timestamp))
+                        else:
+                            print('WHYYYYYYYYYY')
+                            cursor.execute(sql2, (j[0], session['user'], item_id, 'Pending', timestamp))
+                    else:
+                        msg = 'Sorry you cannot do this :('
         cursor.close()
-        print("dup_name", dup_name)
+        print("msg1", msg)
         return jsonify({"msg":msg, "repeated": repeated, "dup_name":dup_name, "dup_id":dup_id})
 
+@app.route("/post/blog/<item_id>/tagEmail",methods=['GET','POST'])
+def tagEmail(item_id):
+    msg = 'Tagged!'
+    email = request.form['tag']
+    cursor = conn.cursor()
+    ts = time.time()
+    timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    members = ContentSharedGroup(cursor, item_id)
+    sql = "SELECT * FROM `tag` WHERE email_tagged = (%s) AND email_tagger = (%s) AND item_id = (%s)"
+    sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
+    print("email, members: ", email, members)
+    print(email in members)
+    if email in members:
+        print("HEREEEEEEEEEE")
+        cursor.execute(sql, (email, session['user'], item_id))
+        dup = cursor.fetchall()
+        print(dup)
+        if len(dup) == 0:
+            print("NOOOOOOOOOOOOOOO")
+            cursor.execute(sql2, (email, session['user'], item_id, 'Pending', timestamp))
+        else:
+            msg = 'Sorry you cannot do this'
+    else:
+        msg = 'Sorry you cannot do this:('
 
+    print("msg2", msg)
+    return msg
 
 def ContentSharedGroup(cursor, item_id):
     sql = "SELECT `fg_name` FROM share WHERE item_id = (%s)"
