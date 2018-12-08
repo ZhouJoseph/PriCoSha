@@ -87,26 +87,45 @@
     </div>
 
     <!--we need two different form for add & delete email request.
-        They might look similar, but trust me, they are different
+        They might look similar, but trust me, they are different-->
     <div id="askEmailAdd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 id="myModalLabel">Please be more specific on who do you want to add</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
                     <p>You can add following people: </p>
                     <div class="modal-body">
-                        {% for email in dupArray %}
-                        <li>Email: {{ email[0] }}, fName:{{ email[1] }}, lName:{{ email[2] }}</li>
-                        {% endfor %}
+                        <div id="emailList"></div>
                     </div>
-                    <input style="margin-top:2px;" class="form-control" type="text" id="email" name="email" placeholder="Please input email here" required/>
-                    <button class="btn btn-outline-dark mb-2" style="width:49%" onclick="addFriendWithEmail()">Add</button>
+                    <input style="margin-top:2px;" class="form-control" type="text" id="email" name="emailID" placeholder="Please input email here" required/>
                 </div>
+                    <button class="btn btn-outline-dark mb-2" style="width:100%" onclick="addFriendWithEmail()">Add</button>
             </div>
         </div>
-    </div>-->
+    </div>
+
+    <div id="askEmailDelete" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="myModalLabel">Please be more specific on who do you want to delete</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>You can Delete following people: </p>
+                    <div class="modal-body">
+                        <div id="emailListDelete"></div>
+                    </div>
+                    <input style="margin-top:2px;" class="form-control" type="text" id="emailDelete" name="emailID" placeholder="Please input email here" required/>
+                </div>
+                    <button class="btn btn-outline-dark mb-2" style="width:100%" onclick="deFriendWithEmail()">Delete</button>
+            </div>
+        </div>
+    </div>
+
 
     <script src="{{url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
@@ -150,9 +169,9 @@
                     + description + '; owner: ' + owner + '</span>';
             }
             return span;
-        };
+        }
 
-        var selected_fg = ''
+        var selected_fg = '';
         function addGroup(elem){
             var fg_name = $(elem).attr('data-fgName');
             selected_fg = fg_name;
@@ -185,12 +204,14 @@
                     }
                     if(info.dup){
                         var dupArray = [];
+                        $("#emailListDelete").empty();
                         for(var i = 0; i < info.dup.length; i++){
-                            var data = info.dup[i];
-                            var temp = [data[0],data[1],data[2]];
-                            dupArray.push(temp);
+                            var data = info.dup[i][0];
+                            var para = "<p>" + data + "</p>";
+                            $("#emailListDelete").append(para);
                         }
-                        alert(dupArray);
+                        $("#friendAdd").modal('hide');
+                        $("#askEmailDelete").modal('show');
                     }
                 }
             })
@@ -219,37 +240,76 @@
                     }
                     if(info.dup){
                         var dupArray = [];
+                        $("#emailList").empty();
                         for(var i = 0; i < info.dup.length; i++){
-                            var data = info.dup[i];
-                            var temp = [data[0],data[1],data[2]];
-                            dupArray.push(temp);
+                            var data = info.dup[i][0];
+                            var para = "<p>" + data + "</p>";
+                            $("#emailList").append(para)
                         }
-                        alert(dupArray);
+                        $("#friendAdd").modal('hide');
+                        $("#askEmailAdd").modal('show');
                     }
                 },
                 error: function(err){
-                    alert("Error")
+                    alert("Error");
                 }
             })
-        };
-        /*
+        }
+
+
         function addFriendWithEmail(){
-            var fname = $("#fName").val();
-            var lname = $('#lName').val();
+            //var fname = $("#fName").val();
+            //var lname = $('#lName').val();
             var email = $("#email").val();
             $.ajax({
-                type: "POST"
+                type: "DELETE",
+                url:"/groups/friendDeleteWithEmail",
+                data:{
+                    "firstName": fname,
+                    "lastName": lname,
+                    "email": email,
+                    "fg_name": selected_fg,
+                },
+                success: function(info) {
+                    if(info.added){
+                        alert("added");
+                    }
+                    if(info.failed){
+                        alert("failed");
+                    }
+                },
+                error: function(err){
+                    alert("Error");
+                }
+            })
+        }
+        {#
+        function deFriendWithEmail(){
+            //var fname = $("#fName").val();
+            //var lname = $('#lName').val();
+            var email = $("#email").val();
+            $.ajax({
+                type: "POST",
                 url:"/groups/friendAddWithEmail",
                 data:{
                     "firstName": fname,
                     "lastName": lname,
-                    "email":email,
-                    "fg_name": selected_fg
+                    "email": email,
+                    "fg_name": selected_fg,
                 },
                 success: function(info) {
+                    if(info.added){
+                        alert("added");
+                    }
+                    if(info.failed){
+                        alert("failed");
+                    }
+                },
+                error: function(err){
+                    alert("Error");
                 }
             })
-        }*/
+        }#}
 
         $.ajax({
             type: "GET",
