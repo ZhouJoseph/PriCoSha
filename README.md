@@ -18,8 +18,8 @@
 #### Kaixuan Zhou ####
 - <strong>View shared content items and detailed info about them</strong>: a page for users to see all the tags/rates/comments about a posted content
 - <strong>Post a content</strong>: users can post a content, with an option of posting a image or not.
-- <strongShow data(show image/text of posts)</strong>: PriCoSha can receive the image users post. In the future there might be other file type added.
-- <strongView Image Gallery</strong>: PriCoSha allows user to see the compressed image along with a blog, and then when people click image gallery, they can see all the pictures that they have access to.
+- <strong>Show data(show image/text of posts)</strong>: PriCoSha can receive the image users post. In the future there might be other file type added.
+- <strong>View Image Gallery</strong>: PriCoSha allows user to see the compressed image along with a blog, and then when people click image gallery, they can see all the pictures that they have access to.
 ### Ruiqi Tao
 - <strong>Login</strong>: allow user to login and signup
 - <strong>Manage tags</strong>: user can manage their tags
