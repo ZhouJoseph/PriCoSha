@@ -584,6 +584,7 @@ def tagEmail(item_id):
             print("NOOOOOOOOOOOOOOO")
             cursor.execute(sql2, (email, session['user'], item_id, 'Pending', timestamp))
             conn.commit()
+            msg = "Tagged"
         else:
             msg = 'Sorry you cannot do this'
     else:
