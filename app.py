@@ -481,7 +481,9 @@ def posttag(item_id):
             taggees_email = cursor.fetchall()
             print(taggees_email)
             for j in taggees_email:
-                if j == session['user']:
+                print(j[0], session['user'])
+                if j[0] == session['user']:
+
                     cursor.execute(sql2, (j, session['user'], item_id, 1, timestamp))
                 else:
                     cursor.execute(sql2, (j, session['user'], item_id, 'Pending', timestamp))
