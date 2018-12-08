@@ -15,20 +15,20 @@
 - Ruiqi Tao    [rt1726]
 - Mengzhe Ding [md3837]
 # Feature Done & Project Distribution
-#### Kaixuan Zhou ####
-- <strong>View shared content items and detailed info about them</strong>: a page for users to see all the tags/rates/comments about a posted content
-- <strong>Post a content</strong>: users can post a content, with an option of posting a image or not.
-- <strong>Show data(show image/text of posts)</strong>: PriCoSha can receive the image users post. In the future there might be other file type added.
-- <strong>View Image Gallery</strong>: PriCoSha allows user to see the compressed image along with a blog, and then when people click image gallery, they can see all the pictures that they have access to.
+### Kaixuan Zhou
+1. <strong>View shared content items and detailed info about them</strong>: a page for users to see all the tags/rates/comments about a posted content
+2. <strong>Post a content</strong>: users can post a content, with an option of posting a image or not.
+3. <strong>Show data(show image/text of posts)</strong>: PriCoSha can receive the image users post. In the future there might be other file type added.
+4. <strong>View Image Gallery</strong>: PriCoSha allows user to see the compressed image along with a blog, and then when people click image gallery, they can see all the pictures that they have access to.
 ### Ruiqi Tao
-- <strong>Login</strong>: allow user to login and signup
-- <strong>Manage tags</strong>: user can manage their tags
-- <strong>Tag a content item</strong>: user can tag a person under a content
+5. <strong>Login</strong>: allow user to login and signup
+6. <strong>Manage tags</strong>: user can manage their tags
+7. <strong>Tag a content item</strong>: user can tag a person under a content
 ### Mengzhe Ding
-- <strong>Add friend</strong>: allow friendgroup owner to add a friend
-- <strong>Defriend</strong>: allow friendgroup owner to kick out a friend
-- <strong>Create Group</strong>: people can create their friend groups
+8. <strong>Add friend</strong>: allow friendgroup owner to add a friend
+9. <strong>Defriend</strong>: allow friendgroup owner to kick out a friend
+10. <strong>Create Group</strong>: people can create their friend groups
 ### Collaborately Build
-- <strong>View Public Content</strong>: people can view public content with 24hrs.
-- <strong>Add comments</strong>: people can add comments
-- <del><strong>Sign up</strong>: people can sign up</del>
+11. <strong>View Public Content</strong>: people can view public content with 24hrs.
+12. <strong>Add comments</strong>: people can add comments
+13. <strong>Sign up</strong>: people can sign up

@@ -373,8 +373,6 @@ def addFriendWithEmail():
     print(fName, lName)
     #check if input email is valid
 
-    # @@@@@@@@@@@@@@@MIGHT Have a BUG Below, Need Review@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
     sqlCheck = "select email from person where fname =(%s) and lname = (%s) and email not in (select email from belong where owner_email = (%s) and fg_name = (%s))"
     cursor.execute(sqlCheck, (fName, lName, session['user'], fg_name))
     available = cursor.fetchall()

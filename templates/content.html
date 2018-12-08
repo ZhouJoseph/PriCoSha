@@ -79,11 +79,13 @@
     {% if tag %}
         tags:
             {% for t in tag %}
+                {{ t }}<br>
             {% endfor %}
     {% endif %}
     {% if rate %}
         rates:
             {% for r in rate %}
+                {{ r }}<br>
             {% endfor %}
     {% endif %}
     <br>
