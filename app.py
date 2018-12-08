@@ -509,6 +509,7 @@ def posttag(item_id):
         sql2 = "INSERT into `tag`(`email_tagged`, `email_tagger`, `item_id`, `status`, `tagtime`) Values (%s, %s, %s, %s, %s)"
         sql3 = "SELECT `email_tagged`, `email_tagger`, `item_id` FROM `tag`"
         status = isPublic(cursor, item_id)
+        print("status", status)
         if status == 1:
             sql = "SELECT email FROM person"
             cursor.execute(sql)
@@ -564,6 +565,7 @@ def tagEmail(item_id):
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     status = isPublic(cursor, item_id)
     members = []
+    print("status", status)
     if status == 1:
         sql = "SELECT email FROM person"
         cursor.execute(sql)
@@ -594,7 +596,8 @@ def isPublic(cursor, item_id):
     sql = "SELECT is_pub FROM contentitem WHERE item_id = (%s)"
     cursor.execute(sql, item_id)
     status = cursor.fetchone()
-    return status
+    print(status)
+    return status[0]
 
 
 def ContentSharedGroup(cursor, item_id):
